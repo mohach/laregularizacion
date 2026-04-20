@@ -191,6 +191,20 @@ const colorB: Record<string, string> = {
   </div>
 </section>
 
+<!-- Ad Placement 1: After Hero -->
+<div class="max-w-6xl mx-auto px-4 py-6">
+  <div class="text-center text-xs text-slate-500 mb-2">Publicidad</div>
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-2691466441263858"
+       data-ad-slot="1234567890"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
 <!-- ══ ALERT ══ -->
 {trending.alert && (
   <div class="bg-amber-500 text-white">
@@ -507,25 +521,43 @@ const colorB: Record<string, string> = {
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {recentPosts.map(post => (
-        <a href={tr.lang === 'es' ? `/blog/${post.slug}` : `/${tr.lang}/blog/${post.slug}`}
-           class:list={['bg-slate-50 border border-slate-100 rounded-xl p-4 hover:shadow-sm hover:border-slate-200 transition-all group']}
-           style="text-decoration:none;color:inherit">
-          <div class="flex items-center gap-2 mb-2 flex-wrap">
-            <span class:list={['font-mono text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full', bf]}>{post.category}</span>
-            {post.is_trending && <span class="font-mono text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">{tr.blog.trendingTag}</span>}
-          </div>
-          <h3 class:list={['font-display text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors mb-2', bf]}>
-            {post.title}
-          </h3>
-          <time class:list={['font-mono text-xs text-slate-400', bf]}>
-            {new Date(post.date).toLocaleDateString(tr.lang === 'es' ? 'es-ES' : tr.lang === 'en' ? 'en-US' : tr.lang === 'ar' ? 'ar-EG' : 'ur-PK', { 
-              year: 'numeric', 
-              month: 'short', 
-              day: 'numeric' 
-            })}
-          </time>
-        </a>
+      {recentPosts.map((post, index) => (
+        <>
+          <a href={tr.lang === 'es' ? `/blog/${post.slug}` : `/${tr.lang}/blog/${post.slug}`}
+             class:list={['bg-slate-50 border border-slate-100 rounded-xl p-4 hover:shadow-sm hover:border-slate-200 transition-all group']}
+             style="text-decoration:none;color:inherit">
+            <div class="flex items-center gap-2 mb-2 flex-wrap">
+              <span class:list={['font-mono text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full', bf]}>{post.category}</span>
+              {post.is_trending && <span class="font-mono text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">{tr.blog.trendingTag}</span>}
+            </div>
+            <h3 class:list={['font-display text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors mb-2', bf]}>
+              {post.title}
+            </h3>
+            <time class:list={['font-mono text-xs text-slate-400', bf]}>
+              {new Date(post.date).toLocaleDateString(tr.lang === 'es' ? 'es-ES' : tr.lang === 'en' ? 'en-US' : tr.lang === 'ar' ? 'ar-EG' : 'ur-PK', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+              })}
+            </time>
+          </a>
+          
+          {/* Ad after 3rd post */}
+          {index === 2 && (
+            <div class="md:col-span-2 lg:col-span-3">
+              <div class="text-center text-xs text-slate-500 mb-2">Publicidad</div>
+              <ins class="adsbygoogle"
+                   style="display:block"
+                   data-ad-client="ca-pub-2691466441263858"
+                   data-ad-slot="2345678901"
+                   data-ad-format="auto"
+                   data-full-width-responsive="true"></ins>
+              <script>
+                   (adsbygoogle = window.adsbygoogle || []).push({});
+              </script>
+            </div>
+          )}
+        </>
       ))}
 
       {recentPosts.length === 0 && (
