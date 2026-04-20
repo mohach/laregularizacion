@@ -300,6 +300,28 @@ async function run() {
   console.log('\n🤖 LaRegularizacion Agent starting...');
   console.log(`📅 Date: ${new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })}`);
 
+  // Step 0: Clean up any existing posts for today
+  console.log('\n🧹 Cleaning up existing posts for today...');
+  try {
+    const files = await fs.readdir(BLOG_DIR);
+    const today = todayStr();
+    let deleted = 0;
+    for (const file of files) {
+      if (file.includes(today) && file.endsWith('.mdx')) {
+        await fs.unlink(path.join(BLOG_DIR, file));
+        console.log(`   🗑️  Deleted: ${file}`);
+        deleted++;
+      }
+    }
+    if (deleted > 0) {
+      console.log(`   ✅ Removed ${deleted} existing post(s) for today`);
+    } else {
+      console.log('   ✅ No existing posts for today found');
+    }
+  } catch (e) {
+    console.log('   ⚠️  Could not clean blog dir:', e.message);
+  }
+
   // Step 1: Fetch all sources
   console.log('\n📡 Fetching sources...');
   console.log('   (403 errors locally = Cloudflare blocking sandbox IP — works fine on GitHub Actions)\n');

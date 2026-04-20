@@ -467,7 +467,7 @@ const colorB: Record<string, string> = {
 
 
       {trending.topics_today?.slice(0,4).map(topic => (
-        <a href={`/blog/${topic.slug}`}
+        <a href={tr.lang === 'es' ? `/blog/${topic.slug}` : `/${tr.lang}/blog/${topic.slug}`}
            class:list={['bg-slate-50 border border-slate-100 rounded-xl p-4 hover:shadow-sm hover:border-slate-200 transition-all group']}
            style="text-decoration:none;color:inherit">
           <div class="flex items-center gap-2 mb-2 flex-wrap">
