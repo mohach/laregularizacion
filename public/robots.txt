@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://laregularizacion.com/sitemap-index.xml
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /

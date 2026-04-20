@@ -1,0 +1,20 @@
+{
+  "name": "laregularizacion",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "agent": "node scripts/agent.mjs"
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^5.1.0",
+    "astro": "^4.15.0",
+    "gray-matter": "^4.0.3",
+    "tailwindcss": "^3.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

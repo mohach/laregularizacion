@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import { t } from '../data/translations';
+import PageContent from '../components/PageContent.astro';
+const tr = t('es');
+---
+<Base tr={tr}>
+  <PageContent tr={tr} />
+</Base>

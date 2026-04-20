@@ -1,0 +1,297 @@
+---
+import type { Translation } from '../data/translations';
+import '../styles/global.css';
+
+interface Props {
+  tr: Translation;
+  title?: string;
+  desc?: string;
+  ogImage?: string;
+  canonical?: string;
+  jsonLd?: object;
+}
+
+const {
+  tr,
+  title = tr.metaTitle,
+  desc = tr.metaDesc,
+  ogImage = tr.ogImage,
+  canonical,
+  jsonLd,
+} = Astro.props;
+
+const isRTL = tr.dir === 'rtl';
+const canon = canonical ?? `https://laregularizacion.com${Astro.url.pathname}`;
+const arabicFont = tr.lang === 'ar';
+const urduFont = tr.lang === 'ur';
+
+const defaultJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'LaRegularizacion.com',
+  url: 'https://laregularizacion.com',
+  description: 'Guía independiente no oficial sobre la Regularización Extraordinaria España 2026',
+  inLanguage: [tr.htmlLang],
+};
+
+const formLinks: Record<string, string> = {
+  ex31: 'https://www.inclusion.gob.es/regularizacion',
+  ex32: 'https://www.inclusion.gob.es/regularizacion',
+  vuln: 'https://www.inclusion.gob.es/regularizacion',
+  boe:  'https://www.boe.es/boe/dias/2026/04/15/pdfs/BOE-A-2026-8284.pdf',
+  tasa: 'https://sede.agenciatributaria.gob.es/Sede/procedimientoini/GI01.shtml',
+  faq:  'https://www.inclusion.gob.es/regularizacion',
+};
+---
+
+<!DOCTYPE html>
+<html lang={tr.htmlLang} dir={tr.dir}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Primary SEO -->
+  <title>{title}</title>
+  <meta name="description" content={desc} />
+  <meta name="keywords" content={tr.keywords} />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <link rel="canonical" href={canon} />
+
+  <!-- hreflang -->
+  <link rel="alternate" hreflang="es" href="https://laregularizacion.com/" />
+  <link rel="alternate" hreflang="en" href="https://laregularizacion.com/en/" />
+  <link rel="alternate" hreflang="ar" href="https://laregularizacion.com/ar/" />
+  <link rel="alternate" hreflang="ur" href="https://laregularizacion.com/ur/" />
+  <link rel="alternate" hreflang="x-default" href="https://laregularizacion.com/" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={desc} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canon} />
+  <meta property="og:site_name" content="LaRegularizacion.com" />
+  <meta property="og:locale" content={tr.htmlLang} />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={desc} />
+  <meta name="twitter:image" content={ogImage} />
+
+  <!-- Fonts: one request for all languages -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=DM+Mono:wght@400;500&family=Noto+Kufi+Arabic:wght@400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd ?? defaultJsonLd)} />
+
+  <!-- Favicon (SVG) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>" />
+</head>
+
+<body>
+
+  <!-- ══ DISCLAIMER (always at top) ══ -->
+  <div class="bg-amber-50 border-b border-amber-200/80">
+    <div class="max-w-6xl mx-auto px-4 py-1.5">
+      <p class:list={['text-center text-xs text-amber-800 leading-snug', isRTL ? 'font-arabic' : 'font-mono']}>
+        {tr.unofficial} ·
+        {tr.lang === 'es' && <span>Fuente oficial: </span>}
+        {tr.lang === 'en' && <span>Official source: </span>}
+        {tr.lang === 'ar' && <span>المصدر الرسمي: </span>}
+        {tr.lang === 'ur' && <span>سرکاری ذریعہ: </span>}
+        <a href="https://www.inclusion.gob.es/regularizacion" target="_blank" rel="noopener"
+           class="font-semibold underline text-amber-900 hover:text-amber-700 transition-colors">
+          inclusion.gob.es/regularizacion
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ══ NAV ══ -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <!-- Nav row: inline style so nothing can override it -->
+      <div style={`
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        height:56px;
+        gap:12px;
+        direction:ltr;
+        ${isRTL ? 'flex-direction:row-reverse;' : ''}
+      `}>
+
+        <!-- LOGO -->
+        <a
+          href={tr.lang === 'es' ? '/' : `/${tr.lang}/`}
+          style={`display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;${isRTL ? 'flex-direction:row-reverse;' : ''}`}
+        >
+          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#1d4ed8,#1e3a8a);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 6px rgba(29,78,216,0.35)">
+            <svg width="16" height="16" fill="none" stroke="white" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 7.414V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <div style={isRTL ? 'text-align:right' : 'text-align:left'}>
+            <div style={`font-size:13px;font-weight:800;color:#1e40af;line-height:1;font-family:${isRTL ? "'Noto Kufi Arabic',serif" : "'Sora',sans-serif"}`}>
+              {tr.siteName}
+            </div>
+            <div style={`font-size:10px;color:#94a3b8;line-height:1;margin-top:2px;font-family:${isRTL ? "'Noto Kufi Arabic',serif" : "'DM Mono',monospace"}`}>
+              {tr.tagline}
+            </div>
+          </div>
+        </a>
+
+        <!-- DESKTOP NAV LINKS (hidden on mobile, flex on desktop) -->
+        <nav style={`align-items:center;gap:2px;flex:1;justify-content:center;${isRTL ? 'flex-direction:row-reverse;' : ''}`}
+             class="hidden lg:flex">
+          {[
+            { href: tr.lang === 'es' ? '/' : `/${tr.lang}/`, label: tr.nav.home },
+            { href: '#proceso',     label: tr.nav.process },
+            { href: '#requisitos',  label: tr.nav.requirements },
+            { href: '#formularios', label: tr.nav.forms },
+            { href: '#quiz',        label: tr.nav.checker },
+            { href: tr.lang === 'es' ? '/blog' : `/${tr.lang}/blog`, label: tr.nav.blog },
+          ].map(link => (
+            <a href={link.href} class="nav-link"
+               style={isRTL ? `font-family:'Noto Kufi Arabic',serif` : ''}>{link.label}</a>
+          ))}
+        </nav>
+
+        <!-- RIGHT GROUP: lang pills + official link -->
+        <!-- On RTL this is on the LEFT because the whole row is reversed -->
+        <div style={`display:flex;align-items:center;gap:8px;flex-shrink:0;${isRTL ? 'flex-direction:row-reverse;' : ''}`}>
+          <!-- Official site -->
+          <a
+            href="https://www.inclusion.gob.es/regularizacion"
+            target="_blank" rel="noopener"
+            class="hidden sm:inline-flex"
+            style={`align-items:center;gap:4px;font-size:11px;font-weight:700;color:#1d4ed8;border:1.5px solid #bfdbfe;border-radius:8px;padding:6px 12px;text-decoration:none;transition:background 0.15s;font-family:${isRTL ? "'Noto Kufi Arabic',serif" : "'Sora',sans-serif"}`}
+          >{tr.nav.official}</a>
+
+          <!-- Language pills -->
+          <div style="display:flex;background:#f1f5f9;border-radius:9px;padding:3px;gap:2px;">
+            {(['es','en','ar','ur'] as const).map(l => (
+              <a
+                href={l === 'es' ? '/' : `/${l}/`}
+                hreflang={l}
+                style={`
+                  font-family:'DM Mono',monospace;
+                  font-size:10px;font-weight:700;
+                  padding:4px 9px;border-radius:7px;
+                  text-decoration:none;
+                  transition:all 0.15s;
+                  ${tr.lang === l
+                    ? 'background:#1d4ed8;color:white;box-shadow:0 1px 4px rgba(29,78,216,0.4);'
+                    : 'color:#64748b;'
+                  }
+                `}
+              >{l.toUpperCase()}</a>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ══ CONTENT ══ -->
+  <main>
+    <slot />
+  </main>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="bg-slate-900 text-slate-300 mt-20 border-t-4 border-blue-800">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+
+      <!-- Disclaimer box — prominent -->
+      <div class:list={[
+        'rounded-2xl border border-amber-600/30 bg-amber-900/20 p-5 mb-10 text-sm leading-relaxed',
+        isRTL ? 'text-right font-arabic' : 'text-left font-body'
+      ]}>
+        <span class="text-amber-400 font-bold">⚠️ </span>
+        <span class="text-amber-200">{tr.footer.disclaimer}</span>
+      </div>
+
+      <!-- Footer grid: RTL reverses column order so brand is on the right -->
+      <div class:list={['grid grid-cols-1 md:grid-cols-3 gap-8 mb-8', isRTL ? 'text-right md:grid-flow-col-dense' : '']}>
+
+        <!-- Brand -->
+        <div>
+          <div class:list={['flex items-center gap-2.5 mb-3', isRTL ? 'flex-row-reverse justify-end' : '']}>
+            <div class="w-7 h-7 rounded-lg bg-blue-700 flex items-center justify-center flex-shrink-0">
+              <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 7.414V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <span class:list={['font-bold text-white text-base', isRTL ? 'font-arabic' : 'font-display']}>{tr.siteName}</span>
+          </div>
+          <p class:list={['text-xs text-slate-500 leading-relaxed', isRTL ? 'font-arabic' : 'font-mono']}>
+            {tr.tagline}
+          </p>
+        </div>
+
+        <!-- Official links -->
+        <div>
+          <h3 class:list={['font-mono text-xs text-slate-500 uppercase tracking-widest mb-3', isRTL ? 'font-arabic text-right' : '']}>
+            {tr.footer.linksTitle}
+          </h3>
+          <ul class:list={['space-y-2', isRTL ? 'text-right' : '']}>
+            {[
+              { href: 'https://www.inclusion.gob.es/regularizacion', label: 'inclusion.gob.es/regularizacion' },
+              { href: 'https://www.boe.es/boe/dias/2026/04/15/pdfs/BOE-A-2026-8284.pdf', label: 'BOE-A-2026-8284 (PDF)' },
+              { href: 'tel:060', label: '📞 060' },
+              { href: 'https://www.inclusion.gob.es/formulario-consultas-regularizacion-extraordinaria-2026', label: 'Formulario consultas' },
+            ].map(l => (
+              <li>
+                <a href={l.href} target="_blank" rel="noopener"
+                   class:list={['text-sm text-slate-400 hover:text-blue-400 transition-colors', isRTL ? 'font-arabic' : 'font-body']}
+                   style="text-decoration:none">
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Languages -->
+        <div>
+          <h3 class:list={['font-mono text-xs text-slate-500 uppercase tracking-widest mb-3', isRTL ? 'font-arabic text-right' : '']}>
+            {tr.footer.langsTitle}
+          </h3>
+          <div class:list={['flex flex-wrap gap-2', isRTL ? 'justify-end' : '']}>
+            {[
+              { code: 'es', label: 'Español', href: '/' },
+              { code: 'en', label: 'English', href: '/en/' },
+              { code: 'ar', label: 'العربية', href: '/ar/' },
+              { code: 'ur', label: 'اردو',    href: '/ur/' },
+            ].map(l => (
+              <a href={l.href}
+                 class:list={[
+                   'px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+                   tr.lang === l.code ? 'bg-blue-700 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                 ]}
+                 style="text-decoration:none"
+                 hreflang={l.code}
+              >{l.label}</a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-slate-800 pt-6 text-center">
+        <p class:list={['text-xs text-slate-600 leading-relaxed', isRTL ? 'font-arabic' : 'font-body']}>
+          {tr.footer.note}
+        </p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

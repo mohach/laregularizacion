@@ -1,0 +1,81 @@
+name: Daily Content Agent
+
+on:
+  schedule:
+    # Runs at 07:00 Madrid time (06:00 UTC in summer, 07:00 UTC in winter)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force run even if already ran today'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+jobs:
+  agent:
+    name: Run DeepSeek Content Agent
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run DeepSeek agent
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: node scripts/agent.mjs
+
+      - name: Check for new content
+        id: check
+        run: |
+          if git diff --quiet HEAD -- src/content/blog/ src/data/trending.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "⚠️ No new content generated"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "✅ New content detected"
+            git diff --stat HEAD -- src/content/blog/ src/data/trending.json
+          fi
+
+      - name: Commit and push new content
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config --local user.email "agent@laregularizacion.com"
+          git config --local user.name "LaRegularizacion Agent"
+          git add src/content/blog/ src/data/trending.json
+          git commit -m "🤖 Daily content update — $(date '+%Y-%m-%d')"
+          git push
+
+      - name: Trigger Cloudflare Pages deploy
+        if: steps.check.outputs.changed == 'true' && env.CF_DEPLOY_HOOK != ''
+        env:
+          CF_DEPLOY_HOOK: ${{ secrets.CF_DEPLOY_HOOK }}
+        run: |
+          curl -X POST "$CF_DEPLOY_HOOK"
+          echo "✅ Cloudflare Pages deploy triggered"
+
+      - name: Summary
+        run: |
+          echo "### 🤖 Agent Run Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Date:** $(date '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "- **New content:** ${{ steps.check.outputs.changed }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Blog posts:** $(ls src/content/blog/*.mdx 2>/dev/null | wc -l) total" >> $GITHUB_STEP_SUMMARY
+          if [ -f src/data/trending.json ]; then
+            echo "- **Trending data:** Updated" >> $GITHUB_STEP_SUMMARY
+          fi

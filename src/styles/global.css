@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --f-display: 'Sora', sans-serif;
+  --f-body:    'Source Serif 4', Georgia, serif;
+  --f-mono:    'DM Mono', monospace;
+  --f-arabic:  'Noto Kufi Arabic', 'Noto Naskh Arabic', serif;
+  --f-urdu:    'Noto Nastaliq Urdu', serif;
+  --brand:     #1d4ed8;
+  --accent:    #ef4444;
+}
+
+/* ── Arabic: force everything RTL + Arabic font ── */
+[lang="ar"] { direction: rtl; text-align: right; }
+[lang="ar"],
+[lang="ar"] body,
+[lang="ar"] p,
+[lang="ar"] span,
+[lang="ar"] li,
+[lang="ar"] td,
+[lang="ar"] th,
+[lang="ar"] a,
+[lang="ar"] button,
+[lang="ar"] input,
+[lang="ar"] label { font-family: var(--f-arabic) !important; line-height: 1.95; }
+[lang="ar"] h1,
+[lang="ar"] h2,
+[lang="ar"] h3,
+[lang="ar"] h4,
+[lang="ar"] h5 { font-family: var(--f-arabic) !important; line-height: 1.5; }
+[lang="ar"] nav,
+[lang="ar"] footer,
+[lang="ar"] header { font-family: var(--f-arabic) !important; }
+
+/* ── Urdu: force Nastaliq ── */
+[lang="ur"] { direction: rtl; text-align: right; }
+[lang="ur"],
+[lang="ur"] body,
+[lang="ur"] p,
+[lang="ur"] span,
+[lang="ur"] li,
+[lang="ur"] a,
+[lang="ur"] button,
+[lang="ur"] nav,
+[lang="ur"] footer { font-family: var(--f-urdu) !important; line-height: 2.3; }
+[lang="ur"] h1,
+[lang="ur"] h2,
+[lang="ur"] h3,
+[lang="ur"] h4 { font-family: var(--f-urdu) !important; line-height: 1.85; }
+
+/* ── Tailwind font classes ── */
+@layer utilities {
+  .font-display { font-family: var(--f-display) !important; }
+  .font-body    { font-family: var(--f-body)    !important; }
+  .font-mono    { font-family: var(--f-mono)    !important; }
+  .font-arabic  { font-family: var(--f-arabic)  !important; }
+  .font-urdu    { font-family: var(--f-urdu)    !important; }
+}
+
+/* ── RTL layout utilities ── */
+[dir="rtl"] .rtl\:flip { transform: scaleX(-1); }
+[dir="rtl"] .timeline-line { right: 19px; left: auto; }
+[dir="rtl"] .timeline-dot { right: -41px; left: auto; }
+[dir="rtl"] .border-l-accent {
+  border-left: none !important;
+  border-right: 3px solid var(--brand);
+}
+
+/* ── Nav link ── */
+.nav-link {
+  @apply text-xs font-semibold text-slate-600 px-3 py-2 rounded-lg
+         transition-all hover:text-brand hover:bg-brand/5 no-underline;
+}
+
+/* ── Countdown flip ── */
+.cd-num.flip { animation: flip .32s ease-in-out; }
+@keyframes flip {
+  0%   { transform: rotateX(0);    opacity: 1 }
+  49%  { transform: rotateX(-90deg); opacity: 0 }
+  50%  { transform: rotateX(90deg);  opacity: 0 }
+  100% { transform: rotateX(0);    opacity: 1 }
+}
+
+/* ── Fade-in on scroll ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+.reveal.in { opacity: 1; transform: none; }
+
+/* ── Blog prose ── */
+.prose-blog h2 { @apply font-display text-xl font-bold text-slate-900 mt-8 mb-3; }
+.prose-blog h3 { @apply font-display text-base font-bold text-slate-800 mt-6 mb-2; }
+.prose-blog p  { @apply font-body text-base text-slate-700 leading-relaxed mb-4; }
+.prose-blog ul { @apply list-disc pl-5 mb-4 space-y-1; }
+.prose-blog li { @apply font-body text-sm text-slate-700 leading-relaxed; }
+.prose-blog a  { @apply text-brand underline hover:text-brand-dark; }
+.prose-blog strong { @apply font-semibold text-slate-900; }
+
+/* scrollbar */
+html { scroll-behavior: smooth; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--brand); }
+
+
+/* ═══════════════════════════════════════════
+   RTL GLOBAL — dir="rtl" on <html> handles:
+   ✓ text alignment (auto right)
+   ✓ flex direction (auto reversed)
+   ✓ inline elements flow RTL
+   
+   We only need to handle cases Tailwind breaks:
+═══════════════════════════════════════════ */
+
+/* FAQ accordion — question text right, chevron left */
+[dir="rtl"] details summary {
+  flex-direction: row-reverse;
+}
+[dir="rtl"] details .faq-answer {
+  text-align: right;
+}
+
+/* Quiz buttons — text right */
+[dir="rtl"] .qbtn {
+  text-align: right !important;
+  direction: rtl;
+}
+
+/* Section decorative underline — right aligned */
+[dir="rtl"] .sec-line {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+/* Timeline vertical line — right side */
+[dir="rtl"] .tl-line {
+  border-right: 2px solid #e2e8f0;
+  border-left: none;
+  padding-right: 28px;
+  padding-left: 0;
+}
+[dir="rtl"] .tl-dot-el {
+  right: -33px !important;
+  left: auto !important;
+}
+
+/* Req item accent border — right side for RTL */
+[dir="rtl"] .req-accent-blue {
+  border-right: 3px solid #1d4ed8 !important;
+  border-left: 1px solid #f1f5f9 !important;
+  border-radius: 10px 0 0 10px !important;
+}
+[dir="rtl"] .req-accent-green {
+  border-right: 3px solid #16a34a !important;
+  border-left: 1px solid #f1f5f9 !important;
+  border-radius: 10px 0 0 10px !important;
+}
+
+/* Nav: when RTL, logo should visually be on right */
+/* flex-row-reverse on the nav container handles this */
+
+/* Footer lang pills — align right */
+[dir="rtl"] .lang-btns-wrap {
+  justify-content: flex-end;
+}
