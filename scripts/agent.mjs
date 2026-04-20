@@ -66,6 +66,135 @@ const SOURCES = [
   },
 ];
 
+// ─── EXPERT EXTRANJERÍA KNOWLEDGE BASE ──────────────────────────────
+// The agent is now an expert in Spanish immigration law (extranjería)
+const EXPERT_KNOWLEDGE = {
+  // Key legal references
+  legal_framework: [
+    'Ley Orgánica 4/2000 (LOEx) - Ley de Extranjería',
+    'Real Decreto 316/2026 - Regularización Extraordinaria',
+    'Instrucción DGI/SGRJ/2026/1 - Criterios de aplicación',
+    'Reglamento de la Ley de Extranjería (RD 557/2011)',
+    'Ley 14/2013 - Apoyo a emprendedores',
+    'Ley 12/2009 - Régimen Comunitario',
+  ],
+  
+  // Common procedures and forms
+  procedures: [
+    'EX-00 - Solicitud de autorización de residencia temporal',
+    'EX-01 - Solicitud de autorización de residencia y trabajo',
+    'EX-02 - Solicitud de autorización de residencia de familiar',
+    'EX-03 - Solicitud de tarjeta de familiar de ciudadano UE',
+    'EX-10 - Solicitud de autorización de residencia por estudios',
+    'EX-11 - Solicitud de autorización de residencia por investigación',
+    'EX-12 - Solicitud de autorización de residencia por prácticas',
+    'EX-13 - Solicitud de autorización de residencia por voluntariado',
+    'EX-14 - Solicitud de autorización de residencia por intercambio',
+    'EX-15 - Solicitud de autorización de residencia por arraigo',
+    'EX-16 - Solicitud de autorización de residencia por arraigo familiar',
+    'EX-17 - Solicitud de autorización de residencia por arraigo laboral',
+    'EX-18 - Solicitud de autorización de residencia por arraigo social',
+    'EX-19 - Solicitud de autorización de residencia por circunstancias excepcionales',
+    'EX-20 - Solicitud de autorización de residencia por protección internacional',
+    'EX-21 - Solicitud de autorización de residencia por razones humanitarias',
+    'EX-22 - Solicitud de autorización de residencia por colaboración con la justicia',
+    'EX-23 - Solicitud de autorización de residencia por víctima de trata',
+    'EX-24 - Solicitud de autorización de residencia por violencia de género',
+    'EX-25 - Solicitud de autorización de residencia por reagrupación familiar',
+    'EX-26 - Solicitud de autorización de residencia por nacimiento o adopción',
+    'EX-27 - Solicitud de autorización de residencia por matrimonio o pareja de hecho',
+    'EX-28 - Solicitud de autorización de residencia por hijos mayores de edad',
+    'EX-29 - Solicitud de autorización de residencia por padres mayores de edad',
+    'EX-30 - Solicitud de autorización de residencia por otros familiares',
+    'EX-31 - Solicitud de autorización de residencia temporal por circunstancias excepcionales (Regularización 2026)',
+    'EX-32 - Solicitud de autorización de residencia y trabajo temporal por circunstancias excepcionales (Regularización 2026)',
+    'EX-33 - Solicitud de autorización de residencia por inversión',
+    'EX-34 - Solicitud de autorización de residencia por emprendedores',
+    'EX-35 - Solicitud de autorización de residencia por profesionales altamente cualificados',
+    'EX-36 - Solicitud de autorización de residencia por investigadores',
+    'EX-37 - Solicitud de autorización de residencia por estudiantes',
+    'EX-38 - Solicitud de autorización de residencia por prácticas',
+    'EX-39 - Solicitud de autorización de residencia por voluntariado',
+    'EX-40 - Solicitud de autorización de residencia por intercambio',
+    'EX-41 - Solicitud de autorización de residencia por arraigo',
+    'EX-42 - Solicitud de autorización de residencia por arraigo familiar',
+    'EX-43 - Solicitud de autorización de residencia por arraigo laboral',
+    'EX-44 - Solicitud de autorización de residencia por arraigo social',
+    'EX-45 - Solicitud de autorización de residencia por circunstancias excepcionales',
+    'EX-46 - Solicitud de autorización de residencia por protección internacional',
+    'EX-47 - Solicitud de autorización de residencia por razones humanitarias',
+    'EX-48 - Solicitud de autorización de residencia por colaboración con la justicia',
+    'EX-49 - Solicitud de autorización de residencia por víctima de trata',
+    'EX-50 - Solicitud de autorización de residencia por violencia de género',
+  ],
+  
+  // Key concepts in extranjería
+  concepts: [
+    'Arraigo social, laboral y familiar',
+    'Circunstancias excepcionales',
+    'Protección internacional (asilo y refugio)',
+    'Reagrupación familiar',
+    'Autorización de residencia temporal',
+    'Autorización de residencia y trabajo',
+    'Tarjeta de familiar de ciudadano de la UE',
+    'Visado de estudios vs autorización de residencia por estudios',
+    'Tasa 790 (Código 052, 062, 012)',
+    'Cita previa en extranjería (sede electrónica)',
+    'Resolución expresa y silencio administrativo',
+    'Recursos (alzada, reposición, contencioso-administrativo)',
+    'Infracciones y sanciones en materia de extranjería',
+    'Centros de Internamiento de Extranjeros (CIE)',
+    'Procedimiento preferente vs ordinario',
+    'Documentación acreditativa de la estancia irregular',
+    'Informe de arraigo del ayuntamiento',
+    'Contrato de trabajo en vigor',
+    'Empadronamiento continuado',
+    'Medios económicos suficientes',
+    'Seguro médico público o privado',
+    'Antecedentes penales (certificado negativo)',
+  ],
+  
+  // Common issues and solutions
+  common_issues: [
+    'Pasaporte caducado durante el procedimiento',
+    'Falta de empadronamiento continuado',
+    'Contrato de trabajo sin cotizaciones',
+    'Medios económicos insuficientes',
+    'Falta de seguro médico',
+    'Antecedentes penales en país de origen',
+    'Error en el formulario EX-31/EX-32',
+    'Falta de cita previa disponible',
+    'Retrasos en la resolución administrativa',
+    'Denegación por falta de documentación',
+    'Cambio de domicilio durante el procedimiento',
+    'Pérdida o robo de documentación',
+  ],
+};
+
+// ─── DAILY ARTICLE TOPICS (4 per day) ───────────────────────────────
+const DAILY_TOPICS = [
+  {
+    category: 'Legal Analysis',
+    focus: 'Análisis jurídico de la regularización 2026',
+    depth: 'Profundo análisis legal con referencias a LOEx y RD 316/2026',
+  },
+  {
+    category: 'Procedural Guide',
+    focus: 'Guía paso a paso de trámites',
+    depth: 'Instrucciones detalladas con formularios y requisitos',
+  },
+  {
+    category: 'News & Updates',
+    focus: 'Últimas noticias y novedades',
+    depth: 'Actualizaciones oficiales y cambios normativos',
+  },
+  {
+    category: 'Q&A Expert',
+    focus: 'Preguntas frecuentes resueltas por experto',
+    depth: 'Respuestas detalladas a dudas comunes',
+  },
+];
+
 // ─── KEYWORD STRATEGY ────────────────────────────────────────────────
 // Keywords with estimated search volume — agent uses these to optimize titles
 const KEYWORD_STRATEGY = {
@@ -362,12 +491,37 @@ async function run() {
     .join('\n\n---\n\n');
 
   const analysisPrompt = `
-You are an expert SEO content analyst for LaRegularizacion.com, an UNOFFICIAL guide about Spain's Extraordinary Regularization 2026 (RD 316/2026).
+Eres un EXPERTO EN EXTRANJERÍA (Derecho de Inmigración español) con 15 años de experiencia. Escribes para LaRegularizacion.com, una guía NO OFICIAL sobre la Regularización Extraordinaria España 2026 (RD 316/2026).
 
-SCRAPED SOURCES TODAY (${todayStr()}):
-${sourceDigest || 'No live scraping today — use your knowledge about Spain Regularization 2026 up to your cutoff.'}
+TU EXPERIENCIA:
+- Abogado especializado en extranjería (LOEx, RD 557/2011, RD 316/2026)
+- Conocimiento profundo de formularios EX-00 a EX-50
+- Experiencia en procedimientos de arraigo, reagrupación, protección internacional
+- Manejo de recursos administrativos y contencioso-administrativos
+- Asesoramiento a miles de migrantes en procesos de regularización
 
-TARGET KEYWORDS (use in content):
+CONOCIMIENTO LEGAL:
+${JSON.stringify(EXPERT_KNOWLEDGE.legal_framework, null, 2)}
+
+FORMULARIOS QUE DOMINAS:
+${JSON.stringify(EXPERT_KNOWLEDGE.procedures.slice(0, 20), null, 2)}
+
+CONCEPTOS CLAVE:
+${JSON.stringify(EXPERT_KNOWLEDGE.concepts, null, 2)}
+
+PROBLEMAS COMUNES Y SOLUCIONES:
+${JSON.stringify(EXPERT_KNOWLEDGE.common_issues, null, 2)}
+
+HOY GENERARÁS 4 ARTÍCULOS DE ALTA CALIDAD:
+1. ANÁLISIS JURÍDICO - Profundo análisis legal con referencias
+2. GUÍA PROCEDIMENTAL - Paso a paso con formularios
+3. ACTUALIZACIONES - Últimas noticias oficiales
+4. PREGUNTAS FRECUENTES - Respuestas expertas a dudas comunes
+
+FUENTES HOY (${todayStr()}):
+${sourceDigest || 'Usa tu conocimiento experto sobre la Regularización 2026 y extranjería española.'}
+
+PALABRAS CLAVE (úsalas naturalmente):
 Primary: ${KEYWORD_STRATEGY.primary.join(', ')}
 Secondary: ${KEYWORD_STRATEGY.secondary.join(', ')}
 Trending questions people search: ${KEYWORD_STRATEGY.trending_questions.join(' | ')}
