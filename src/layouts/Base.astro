@@ -278,11 +278,26 @@ const formLinks: Record<string, string> = {
           </h3>
           <ul class:list={['space-y-2', isRTL ? 'text-right' : '']}>
             {[
-              { href: '/privacy', label: tr.lang === 'es' ? 'Política de Privacidad' : tr.lang === 'en' ? 'Privacy Policy' : tr.lang === 'ar' ? 'سياسة الخصوصية' : 'رازداری کی پالیسی' },
-              { href: '/terms', label: tr.lang === 'es' ? 'Términos de Servicio' : tr.lang === 'en' ? 'Terms of Service' : tr.lang === 'ar' ? 'شروط الخدمة' : 'سروس کی شرائط' },
-              { href: '/disclaimer', label: tr.lang === 'es' ? 'Aviso Legal' : tr.lang === 'en' ? 'Legal Disclaimer' : tr.lang === 'ar' ? 'إخلاء المسؤولية' : 'قانونی ذمہ داری سے انکار' },
-              { href: '/about', label: tr.lang === 'es' ? 'Sobre Nosotros' : tr.lang === 'en' ? 'About Us' : tr.lang === 'ar' ? 'من نحن' : 'ہمارے بارے میں' },
-              { href: '/contact', label: tr.lang === 'es' ? 'Contacto' : tr.lang === 'en' ? 'Contact' : tr.lang === 'ar' ? 'اتصل بنا' : 'رابطہ' },
+              { 
+                href: tr.lang === 'es' ? '/privacy' : `/${tr.lang}/privacy`,
+                label: tr.lang === 'es' ? 'Política de Privacidad' : tr.lang === 'en' ? 'Privacy Policy' : tr.lang === 'ar' ? 'سياسة الخصوصية' : 'رازداری کی پالیسی'
+              },
+              { 
+                href: tr.lang === 'es' ? '/terms' : `/${tr.lang}/terms`,
+                label: tr.lang === 'es' ? 'Términos de Servicio' : tr.lang === 'en' ? 'Terms of Service' : tr.lang === 'ar' ? 'شروط الخدمة' : 'سروس کی شرائط'
+              },
+              { 
+                href: tr.lang === 'es' ? '/disclaimer' : `/${tr.lang}/disclaimer`,
+                label: tr.lang === 'es' ? 'Aviso Legal' : tr.lang === 'en' ? 'Legal Disclaimer' : tr.lang === 'ar' ? 'إخلاء المسؤولية' : 'قانونی ذمہ داری سے انکار'
+              },
+              { 
+                href: tr.lang === 'es' ? '/about' : `/${tr.lang}/about`,
+                label: tr.lang === 'es' ? 'Sobre Nosotros' : tr.lang === 'en' ? 'About Us' : tr.lang === 'ar' ? 'من نحن' : 'ہمارے بارے میں'
+              },
+              { 
+                href: tr.lang === 'es' ? '/contact' : `/${tr.lang}/contact`,
+                label: tr.lang === 'es' ? 'Contacto' : tr.lang === 'en' ? 'Contact' : tr.lang === 'ar' ? 'اتصل بنا' : 'رابطہ'
+              },
             ].map(l => (
               <li>
                 <a href={l.href}
