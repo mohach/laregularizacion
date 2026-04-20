@@ -1,11 +1,52 @@
 ---
 import type { Translation } from '../data/translations';
 import trending from '../data/trending.json';
+import { readdir, readFile } from 'fs/promises';
+import { join } from 'path';
+import matter from 'gray-matter';
 
 interface Props { tr: Translation }
 const { tr } = Astro.props;
 const R = tr.dir === 'rtl';
 const bf = tr.lang === 'ar' ? 'font-arabic' : tr.lang === 'ur' ? 'font-urdu' : 'font-body';
+
+// Get 6 most recent blog posts for this language
+let recentPosts = [];
+try {
+  const blogDir = join(process.cwd(), 'src', 'content', 'blog');
+  const files = await readdir(blogDir);
+  
+  for (const file of files.filter(f => f.endsWith('.mdx'))) {
+    const raw = await readFile(join(blogDir, file), 'utf8');
+    const { data } = matter(raw);
+    
+    // Get title for current language
+    let title = '';
+    if (tr.lang === 'es') title = data.title_es || data.title_en || '';
+    else if (tr.lang === 'en') title = data.title_en || data.title_es || '';
+    else if (tr.lang === 'ar') title = data.title_ar || data.title_es || '';
+    else if (tr.lang === 'ur') title = data.title_ur || data.title_es || '';
+    
+    if (title) {
+      recentPosts.push({
+        slug: file.replace('.mdx', ''),
+        title: title,
+        category: data.category || 'Noticias',
+        is_trending: data.is_trending || false,
+        date: data.date
+      });
+    }
+  }
+  
+  // Sort by date, most recent first
+  recentPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  
+  // Take only 6 most recent
+  recentPosts = recentPosts.slice(0, 6);
+  
+} catch (e) {
+  console.log('Error loading blog posts:', e.message);
+}
 
 const formLinks: Record<string, string> = {
   ex31:'https://www.inclusion.gob.es/regularizacion',
@@ -465,23 +506,30 @@ const colorB: Record<string, string> = {
       </a>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {trending.topics_today?.slice(0,4).map(topic => (
-        <a href={tr.lang === 'es' ? `/blog/${topic.slug}` : `/${tr.lang}/blog/${topic.slug}`}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {recentPosts.map(post => (
+        <a href={tr.lang === 'es' ? `/blog/${post.slug}` : `/${tr.lang}/blog/${post.slug}`}
            class:list={['bg-slate-50 border border-slate-100 rounded-xl p-4 hover:shadow-sm hover:border-slate-200 transition-all group']}
            style="text-decoration:none;color:inherit">
           <div class="flex items-center gap-2 mb-2 flex-wrap">
-            <span class:list={['font-mono text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full', bf]}>{topic.category}</span>
-            {topic.is_trending && <span class="font-mono text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">{tr.blog.trendingTag}</span>}
+            <span class:list={['font-mono text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full', bf]}>{post.category}</span>
+            {post.is_trending && <span class="font-mono text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">{tr.blog.trendingTag}</span>}
           </div>
-          <h3 class:list={['font-display text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors', bf]}>
-            {tr.lang === 'es' ? topic.title_es : tr.lang === 'en' ? topic.title_en : tr.lang === 'ar' ? topic.title_ar : topic.title_ur}
+          <h3 class:list={['font-display text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors mb-2', bf]}>
+            {post.title}
           </h3>
+          <time class:list={['font-mono text-xs text-slate-400', bf]}>
+            {new Date(post.date).toLocaleDateString(tr.lang === 'es' ? 'es-ES' : tr.lang === 'en' ? 'en-US' : tr.lang === 'ar' ? 'ar-EG' : 'ur-PK', { 
+              year: 'numeric', 
+              month: 'short', 
+              day: 'numeric' 
+            })}
+          </time>
         </a>
       ))}
 
-      {(!trending.topics_today || trending.topics_today.length === 0) && (
-        <div class="col-span-2 bg-slate-50 border border-slate-100 rounded-xl p-6 text-center">
+      {recentPosts.length === 0 && (
+        <div class="col-span-3 bg-slate-50 border border-slate-100 rounded-xl p-6 text-center">
           <div class="text-3xl mb-2">🤖</div>
           <p class:list={['text-xs text-slate-400', bf]}>{tr.blog.noArticles}</p>
         </div>
