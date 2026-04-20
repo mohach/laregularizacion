@@ -1,143 +1,40 @@
 ---
-import Base from '../../layouts/Base.astro';
-import { t } from '../../data/translations';
-import { readdir, readFile } from 'fs/promises';
-import { join } from 'path';
-import matter from 'gray-matter';
-
-export async function getStaticPaths() {
-  const blogDir = join(process.cwd(), 'src', 'content', 'blog');
-  try {
-    const files = await readdir(blogDir);
-    return files
-      .filter(f => f.endsWith('.mdx'))
-      .map(f => ({ params: { slug: f.replace('.mdx', '') } }));
-  } catch { return []; }
-}
-
+// Redirect individual blog posts to Spanish version for backward compatibility
 const { slug } = Astro.params;
-const tr = t('es');
-
-let post: any = null;
-try {
-  const blogDir = join(process.cwd(), 'src', 'content', 'blog');
-  const raw = await readFile(join(blogDir, `${slug}.mdx`), 'utf8');
-  const { data } = matter(raw);
-  post = data;
-} catch (e) {
-  console.error('Post not found:', slug);
-}
-
-// Simple markdown-to-HTML renderer (no heavy deps needed)
-function renderMd(md: string): string {
-  if (!md) return '';
-  return md
-    .replace(/^#{2}\s+(.+)$/gm, '<h2>$1</h2>')
-    .replace(/^#{3}\s+(.+)$/gm, '<h3>$1</h3>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-    .replace(/^>\s+(.+)$/gm, '<blockquote>$1</blockquote>')
-    .replace(/^-\s+(.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/^(?!<[hbulia]|<block)(.+)$/gm, '<p>$1</p>')
-    .replace(/<p><\/p>/g, '');
-}
+const redirectUrl = `/es/blog/${slug}`;
 ---
 
-<Base
-  tr={tr}
-  title={post?.title_es ?? 'Artículo'}
-  desc={post?.excerpt_es ?? tr.metaDesc}
-  canonical={`https://laregularizacion.com/blog/${slug}`}
->
-  <div class="py-12 bg-white min-h-screen">
-    <div class="max-w-2xl mx-auto px-4 sm:px-6">
-
-      {!post ? (
-        <div class="text-center py-20">
-          <div class="text-4xl mb-4">404</div>
-          <p class="font-body text-slate-500">Artículo no encontrado.</p>
-          <a href="/blog" class="mt-4 inline-block font-display text-sm font-semibold text-blue-700">{tr.blog.backToBlog}</a>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content={`0; url=${redirectUrl}`}>
+    <title>Redirecting to Blog Post...</title>
+    <script is:inline>
+        window.location.replace('/es/blog/${slug}');
+    </script>
+</head>
+<body style="margin: 0; padding: 2rem; font-family: sans-serif; background: #f5f5f5;">
+    <div style="max-width: 600px; margin: 2rem auto; padding: 2rem; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+        <h1 style="color: #333;">Redirigiendo...</h1>
+        <p style="color: #666; margin: 1rem 0;">
+            Estás siendo redirigido a la entrada del blog en español.
+        </p>
+        <p style="color: #666; margin: 1rem 0;">
+            Si no eres redirigido automáticamente, haz clic:
+        </p>
+        <a href="/es/blog/${slug}" style="display: inline-block; padding: 0.75rem 1.5rem; background: #3b82f6; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">
+            Ir a la Entrada (Español)
+        </a>
+        <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #eee;">
+            <p style="color: #999; font-size: 0.9rem;">
+                También disponible en:
+                <a href="/en/blog/${slug}" style="color: #3b82f6; margin: 0 0.5rem;">English</a> |
+                <a href="/ar/blog/${slug}" style="color: #3b82f6; margin: 0 0.5rem;">العربية</a> |
+                <a href="/ur/blog/${slug}" style="color: #3b82f6; margin: 0 0.5rem;">اردو</a>
+            </p>
         </div>
-      ) : (
-        <>
-          <!-- Back -->
-          <a href="/blog" class="inline-flex items-center gap-1.5 font-mono text-xs text-slate-400 hover:text-blue-600 transition-colors mb-6" style="text-decoration:none">
-            ← {tr.blog.backToBlog}
-          </a>
-
-          <!-- Hero image -->
-          {post.image && (
-            <div class="w-full h-56 sm:h-72 rounded-2xl overflow-hidden mb-6 shadow-md">
-              <img
-                src={post.image}
-                alt={post.title_es}
-                class="w-full h-full object-cover"
-                loading="eager"
-              />
-            </div>
-          )}
-
-          <!-- Category + trending -->
-          <div class="flex items-center gap-2 mb-4 flex-wrap">
-            {post.category && <span class="font-mono text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full">{post.category}</span>}
-            {post.is_trending && <span class="font-mono text-xs bg-orange-100 text-orange-700 px-2.5 py-1 rounded-full">{tr.blog.trendingTag}</span>}
-          </div>
-
-          <!-- Title -->
-          <h1 class="font-display text-2xl sm:text-3xl font-bold text-slate-900 leading-tight mb-3">{post.title_es}</h1>
-
-          <!-- Meta -->
-          <div class="flex items-center gap-3 font-mono text-xs text-slate-400 mb-6 flex-wrap">
-            <span>{tr.blog.publishedOn} {post.date}</span>
-            {post.primary_keyword && <span class="bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">#{post.primary_keyword}</span>}
-          </div>
-
-          <!-- Excerpt -->
-          <p class="font-body text-base text-slate-600 leading-relaxed mb-6 p-4 bg-slate-50 border-l-3 border-l-blue-500 rounded-r-xl italic">{post.excerpt_es}</p>
-
-          <!-- Article body -->
-          <article class="prose-blog" set:html={renderMd(post.body_es ?? '')} />
-
-          <!-- Sources -->
-          {post.sources?.length > 0 && (
-            <div class="mt-8 pt-6 border-t border-slate-100">
-              <div class="font-mono text-xs text-slate-400 uppercase tracking-widest mb-2">{tr.blog.sourceLabel}</div>
-              <ul class="space-y-1">
-                {post.sources.map((src: string) => (
-                  <li><a href={src} target="_blank" rel="noopener" class="font-mono text-xs text-blue-600 hover:underline">{src}</a></li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <!-- AI update notice -->
-          <div class="mt-8 flex items-center gap-2 font-mono text-xs text-slate-400">
-            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-          </div>
-
-          <!-- Language switcher for this article -->
-          <div class="mt-8 p-4 bg-slate-50 rounded-xl border border-slate-100">
-            <div class="font-mono text-xs text-slate-400 uppercase tracking-widest mb-3">{tr.footer.langsTitle}</div>
-            <div class="flex gap-2 flex-wrap">
-              {[
-                { code: 'es', label: 'Español' },
-                { code: 'en', label: 'English' },
-                { code: 'ar', label: 'العربية' },
-                { code: 'ur', label: 'اردو' },
-              ].map(l => (
-                <a
-                  href={`/${l.code === 'es' ? 'blog' : `${l.code}/blog`}/${slug}`}
-                  class:list={['px-3 py-1.5 rounded-lg text-xs font-medium no-underline', l.code === 'es' ? 'bg-blue-700 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50']}
-                >{l.label}</a>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-
     </div>
-  </div>
-</Base>
+</body>
+</html>
