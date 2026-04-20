@@ -465,7 +465,7 @@ const colorB: Record<string, string> = {
       </a>
     </div>
 
-
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {trending.topics_today?.slice(0,4).map(topic => (
         <a href={tr.lang === 'es' ? `/blog/${topic.slug}` : `/${tr.lang}/blog/${topic.slug}`}
            class:list={['bg-slate-50 border border-slate-100 rounded-xl p-4 hover:shadow-sm hover:border-slate-200 transition-all group']}

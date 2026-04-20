@@ -5,14 +5,14 @@
   "alert": null,
   "topics_today": [
     {
-      "slug": "noticias-regularizacion-2026-04-20-2026-04-20",
-      "title_es": "Actualización Regularización Extraordinaria — 2026-04-20",
-      "title_en": "Spain Regularization Update — 2026-04-20",
-      "title_ar": "تحديث التسوية الاستثنائية — 2026-04-20",
-      "title_ur": "ریگولرائزیشن اپڈیٹ — 2026-04-20",
-      "category": "noticias",
-      "is_trending": false,
-      "primary_keyword": "regularización extraordinaria 2026"
+      "slug": "test-article-2026-04-20",
+      "title_es": "Prueba de Artículo de Blog",
+      "title_en": "Blog Article Test",
+      "title_ar": "اختبار مقال المدونة",
+      "title_ur": "بلاگ آرٹیکل ٹیسٹ",
+      "category": "Prueba",
+      "is_trending": true,
+      "primary_keyword": "prueba"
     }
   ]
 }
