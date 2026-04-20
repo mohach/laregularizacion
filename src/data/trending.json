@@ -3,16 +3,5 @@
   "trending_searches": [],
   "official_updates": [],
   "alert": null,
-  "topics_today": [
-    {
-      "slug": "test-article-2026-04-20",
-      "title_es": "Prueba de Artículo de Blog",
-      "title_en": "Blog Article Test",
-      "title_ar": "اختبار مقال المدونة",
-      "title_ur": "بلاگ آرٹیکل ٹیسٹ",
-      "category": "Prueba",
-      "is_trending": true,
-      "primary_keyword": "prueba"
-    }
-  ]
+  "topics_today": []
 }
