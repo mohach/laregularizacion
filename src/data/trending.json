@@ -1,17 +1,18 @@
 {
-  "date": "2026-04-18",
-  "trending_searches": [
-    "cómo pedir cita regularización 2026",
-    "formulario EX-32 descargar",
-    "requisitos regularización migrantes españa",
-    "plazo regularización junio 2026",
-    "can I work while waiting regularization spain"
-  ],
-  "official_updates": [
-    "Solicitud telemática abierta desde el 16 de abril de 2026",
-    "Solicitud presencial con cita previa desde el 20 de abril de 2026",
-    "Formularios EX-31 y EX-32 disponibles en inclusion.gob.es/regularizacion"
-  ],
+  "date": "2026-04-20",
+  "trending_searches": [],
+  "official_updates": [],
   "alert": null,
-  "topics_today": []
+  "topics_today": [
+    {
+      "slug": "noticias-regularizacion-2026-04-20-2026-04-20",
+      "title_es": "Actualización Regularización Extraordinaria — 2026-04-20",
+      "title_en": "Spain Regularization Update — 2026-04-20",
+      "title_ar": "تحديث التسوية الاستثنائية — 2026-04-20",
+      "title_ur": "ریگولرائزیشن اپڈیٹ — 2026-04-20",
+      "category": "noticias",
+      "is_trending": false,
+      "primary_keyword": "regularización extraordinaria 2026"
+    }
+  ]
 }
