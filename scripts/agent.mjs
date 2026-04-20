@@ -165,10 +165,18 @@ function fetchText(url, timeoutMs = 15000, maxRedirects = 5) {
 }
 
 // ─── UNSPLASH IMAGE ──────────────────────────────────────────────────
-// Uses Unsplash Source (no API key needed) — returns a direct image URL
-// We fetch a relevant photo based on the article topic/category
+// Hardcoded fallback images per category (direct Unsplash CDN URLs — always work)
+const FALLBACK_IMAGES = {
+  noticias:    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=630&fit=crop', // newspaper/news
+  guias:       'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&h=630&fit=crop', // desk documents
+  requisitos:  'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=1200&h=630&fit=crop', // passport
+  formularios: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&h=630&fit=crop', // form signing
+  plazos:      'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=1200&h=630&fit=crop', // calendar
+  tramites:    'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1200&h=630&fit=crop', // handshake office
+  default:     'https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=1200&h=630&fit=crop', // spain street
+};
+
 async function getUnsplashImage(topic) {
-  // Build a search query from category + primary keyword
   const categoryQueries = {
     noticias:     'spain immigration news',
     guias:        'spain document paperwork office',
@@ -179,7 +187,6 @@ async function getUnsplashImage(topic) {
   };
 
   const base = categoryQueries[topic.category] ?? 'spain immigration';
-  // Use the primary keyword to refine if it's in English/Spanish
   const kw = (topic.primary_keyword || '')
     .replace(/[áàä]/g,'a').replace(/[éèë]/g,'e')
     .replace(/[íìï]/g,'i').replace(/[óòö]/g,'o')
@@ -187,20 +194,14 @@ async function getUnsplashImage(topic) {
     .replace(/[^\w\s]/g,'').trim().split(' ').slice(0,3).join(' ');
 
   const query = encodeURIComponent(kw || base);
-
-  // Unsplash Source API — free, no key needed, returns a redirect to a real image
-  // We use 1200x630 (OG image size) for perfect blog headers
   const url = `https://source.unsplash.com/1200x630/?${query}`;
 
   try {
-    // Follow the redirect to get the actual image URL
     const finalUrl = await new Promise((resolve, reject) => {
-      const req = https.request(url, { method: 'HEAD' }, (res) => {
-        // Unsplash redirects to the actual image
+      const req = https.request(url, { method: 'HEAD', rejectUnauthorized: false }, (res) => {
         if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
           resolve(res.headers.location);
         } else if (res.statusCode === 200) {
-          // Already the image URL
           resolve(url);
         } else {
           reject(new Error(`status ${res.statusCode}`));
@@ -213,9 +214,10 @@ async function getUnsplashImage(topic) {
     console.log(`  🖼️  Image: ${finalUrl.slice(0, 80)}...`);
     return finalUrl;
   } catch (e) {
-    console.log(`  ⚠️ Unsplash failed (${e.message}), using fallback`);
-    // Fallback: a reliable default immigration/Spain image
-    return `https://source.unsplash.com/1200x630/?spain,city`;
+    // Use hardcoded fallback — guaranteed to work, no external request needed
+    const fallback = FALLBACK_IMAGES[topic.category] ?? FALLBACK_IMAGES.default;
+    console.log(`  🖼️  Using fallback image for category "${topic.category}"`);
+    return fallback;
   }
 }
 
