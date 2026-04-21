@@ -1,8 +1,20 @@
 {
   "date": "2026-04-21",
-  "trending_searches": [],
-  "official_updates": [],
+  "trending_searches": [
+    "¿Cuándo empieza la regularización 2026?",
+    "¿Cómo solicitar el EX-31?",
+    "¿Qué documentos necesito para la regularización?"
+  ],
+  "official_updates": [
+    "BOE publicación nueva ley",
+    "Ministerio de Inclusión anuncios"
+  ],
   "alert": null,
-  "topics_today": [],
+  "topics_today": [
+    "Análisis profundo de la Ley de Extranjería y jurisprudencia",
+    "Guía paso a paso para formularios EX-00 a EX-50",
+    "Últimas novedades y cambios normativos",
+    "Respuestas a casos complejos y preguntas frecuentes"
+  ],
   "has_live_data": false
 }

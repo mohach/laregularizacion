@@ -36,11 +36,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Content Agent
+      - name: Run EXPERT Extranjería Agent
         id: run-agent
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-        run: node scripts/agent.mjs
+        run: node scripts/agent-expert.mjs
 
       - name: Commit and push new content
         run: |
@@ -58,13 +58,8 @@ jobs:
           echo "📁 Blog files found:"
           echo "$BLOG_FILES"
           
-          # Add blog files
-          git add src/content/blog/
-          
-          # Add trending.json if it exists and has changes
-          if [ -f "src/data/trending.json" ]; then
-            git add src/data/trending.json
-          fi
+          # Add files
+          git add src/content/blog/ src/data/trending.json
           
           # Check if there are actual changes
           if git diff --cached --quiet; then
