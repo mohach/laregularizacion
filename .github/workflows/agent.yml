@@ -36,11 +36,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run EXPERT Extranjería Agent
+      - name: Run Content Agent
         id: run-agent
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-        run: node scripts/agent-expert.mjs
+        run: node scripts/agent.mjs
 
       - name: Commit and push new content
         run: |
