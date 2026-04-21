@@ -188,11 +188,15 @@ function fetchText(url, timeoutMs = 10000, maxRedirects = 3) {
 // ─── DEEPSEEK API ────────────────────────────────────────────────────
 async function callDeepSeek(prompt, systemPrompt = '') {
   return new Promise((resolve, reject) => {
+    // Clean and truncate prompts to avoid JSON issues
+    const cleanPrompt = prompt.substring(0, 15000).replace(/[\x00-\x1F\x7F]/g, ''); // Remove control characters
+    const cleanSystemPrompt = systemPrompt ? systemPrompt.substring(0, 5000).replace(/[\x00-\x1F\x7F]/g, '') : '';
+    
     const data = JSON.stringify({
       model: DEEPSEEK_MODEL,
       messages: [
-        ...(systemPrompt ? [{ role: 'system', content: systemPrompt }] : []),
-        { role: 'user', content: prompt }
+        ...(cleanSystemPrompt ? [{ role: 'system', content: cleanSystemPrompt }] : []),
+        { role: 'user', content: cleanPrompt }
       ],
       max_tokens: 4000,
       temperature: 0.7
@@ -298,6 +302,13 @@ async function fetchAndAnalyzeSources() {
   // Analyze fetched content with DeepSeek
   console.log('🤖 Analyzing fetched content for trends...');
   
+  // Clean and truncate the fetched text for API safety
+  let cleanFetchedText = allFetchedText
+    .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters
+    .replace(/[\\"]/g, '') // Remove backslashes and quotes that could break JSON
+    .replace(/\s+/g, ' ') // Normalize whitespace
+    .substring(0, 3000); // Truncate to 3000 chars max
+  
   const analysisPrompt = `Analyze this Spanish immigration/regularization news and official sources.
 Extract:
 1. Top 3 trending search queries people would have
@@ -305,8 +316,8 @@ Extract:
 3. Any urgent alerts (new laws, deadline changes, etc.)
 4. Main topics being discussed
 
-Sources content:
-${allFetchedText.substring(0, 10000)}
+Sources content (cleaned):
+${cleanFetchedText}
 
 Respond in JSON format:
 {
@@ -362,12 +373,12 @@ Idioma: ${lang === 'es' ? 'Español (España)' :
 
   const trendingContext = trendingData.has_live_data ? 
     `Contexto actual (${todayStr()}):
-    - Búsquedas trending: ${trendingData.trending_searches.join(', ')}
-    - Actualizaciones oficiales: ${trendingData.official_updates.join(', ')}
-    ${trendingData.alert ? `- Alerta: ${trendingData.alert}` : ''}` :
+    - Búsquedas trending: ${trendingData.trending_searches.slice(0, 3).join(', ')}
+    - Actualizaciones oficiales: ${trendingData.official_updates.slice(0, 2).join(', ')}
+    ${trendingData.alert ? `- Alerta: ${trendingData.alert.substring(0, 200)}` : ''}` :
     `Contexto general (keywords estratégicos):
-    - Palabras clave: ${KEYWORD_STRATEGY.primary_keywords.join(', ')}
-    - Preguntas frecuentes: ${KEYWORD_STRATEGY.trending_questions.join(' | ')}`;
+    - Palabras clave: ${KEYWORD_STRATEGY.primary_keywords.slice(0, 5).join(', ')}
+    - Preguntas frecuentes: ${KEYWORD_STRATEGY.trending_questions.slice(0, 3).join(' | ')}`;
 
   const prompt = `Genera un artículo experto sobre: "${topic.focus}"
 
