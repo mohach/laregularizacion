@@ -58,8 +58,13 @@ jobs:
           echo "📁 Blog files found:"
           echo "$BLOG_FILES"
           
-          # Add files
-          git add src/content/blog/ src/data/trending.json
+          # Add blog files
+          git add src/content/blog/
+          
+          # Add trending.json if it exists and has changes
+          if [ -f "src/data/trending.json" ]; then
+            git add src/data/trending.json
+          fi
           
           # Check if there are actual changes
           if git diff --cached --quiet; then
