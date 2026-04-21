@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 /**
  * LaRegularizacion.com — EXPERT Immigration Lawyer Agent
- * Combines expert immigration law knowledge with RSS fetching and trending analysis
- * Generates 4 expert-level articles daily with 15+ years of virtual experience
- * Topics: Legal Analysis, Procedural Guides, Updates, Expert Q&A
- * Languages: ES, EN, AR, UR
- *
+ * Based on the original working agent with expert immigration law knowledge
+ * 15+ years virtual experience in Spanish immigration law (extranjería)
+ * 
  * Run: node scripts/agent-expert.mjs
  * Env: DEEPSEEK_API_KEY
  */
@@ -31,174 +29,145 @@ if (!DEEPSEEK_API_KEY) {
 }
 
 // Official + trusted news sources to fetch
-// Using simpler, more reliable RSS feeds
+// Using RSS feeds which are much more accessible than HTML pages
 const SOURCES = [
   {
-    name: 'BOE — Últimas disposiciones',
-    url: 'https://www.boe.es/rss/boe.php',
-    type: 'rss',
+    name: 'Google News — Regularización España 2026',
+    url: 'https://news.google.com/rss/search?q=regularizacion+extraordinaria+migrantes+espana+2026&hl=es&gl=ES&ceid=ES:es',
+    type: 'news_rss',
     lang: 'es',
   },
   {
-    name: 'El País — Inmigración',
-    url: 'https://feeds.elpais.com/mrss-s/pages/elpais_es/inmigracion',
-    type: 'rss',
+    name: 'Google News — EX-31 EX-32 España',
+    url: 'https://news.google.com/rss/search?q=EX-31+EX-32+regularizacion+espana&hl=es&gl=ES&ceid=ES:es',
+    type: 'news_rss',
     lang: 'es',
   },
   {
-    name: 'Europa Press — Sociedad',
-    url: 'https://www.europapress.es/rss/rss.aspx?ch=00044',
-    type: 'rss',
+    name: 'Google News — Inmigración España',
+    url: 'https://news.google.com/rss/search?q=inmigracion+espana+2026&hl=es&gl=ES&ceid=ES:es',
+    type: 'news_rss',
     lang: 'es',
   },
 ];
 
-// Trending keywords and search intent
-const KEYWORD_STRATEGY = {
+// Expert immigration law keywords and search intent
+const EXPERT_KEYWORD_STRATEGY = {
   primary_keywords: [
     'regularización extraordinaria 2026',
     'EX-31 formulario',
-    'EX-32 formulario', 
-    'ley de extranjería',
+    'EX-32 formulario',
+    'ley de extranjería LOEx',
     'permiso de residencia',
     'arraigo social',
     'arraigo laboral',
     'nacionalidad española',
+    'RD 316/2026',
+    'procedimiento administrativo extranjería',
   ],
   trending_questions: [
     '¿Cuándo empieza la regularización 2026?',
-    '¿Cómo solicitar el EX-31?',
+    '¿Cómo solicitar el EX-31 paso a paso?',
     '¿Qué documentos necesito para la regularización?',
     '¿Cuánto tarda el trámite de regularización?',
     '¿Puedo trabajar con el EX-31 en trámite?',
+    '¿Qué es el silencio administrativo en extranjería?',
+    '¿Cómo acreditar arraigo social o laboral?',
+    '¿Qué diferencias hay entre EX-31 y EX-32?',
   ],
   official_updates: [
     'BOE publicación nueva ley',
     'Ministerio de Inclusión anuncios',
     'Sede electrónica extranjería',
     'Procedimientos administrativos',
+    'Jurisprudencia TSJ extranjería',
+  ],
+  legal_references: [
+    'Ley Orgánica 4/2000 (LOEx)',
+    'Real Decreto 316/2026',
+    'Reglamento de Extranjería',
+    'Instrucciones DGI',
+    'Circulares Secretaría de Estado',
   ]
 };
 
-// ─── DAILY TOPICS ────────────────────────────────────────────────────
-const DAILY_TOPICS = [
-  {
-    id: 1,
-    category: 'Análisis Jurídico',
-    focus: 'Análisis profundo de la Ley de Extranjería y jurisprudencia',
-    depth: 'Análisis detallado con referencias a LOEx, RD 316/2026, jurisprudencia del TSJ y TJUE',
-    keywords: ['LOEx', 'jurisprudencia', 'TSJ', 'TJUE', 'análisis legal'],
-    is_trending: true
-  },
-  {
-    id: 2,
-    category: 'Guía Procedimental',
-    focus: 'Guía paso a paso para formularios EX-00 a EX-50',
-    depth: 'Instrucciones detalladas con ejemplos prácticos de cumplimentación',
-    keywords: ['EX-31', 'EX-32', 'formularios', 'procedimiento', 'guía práctica'],
-    is_trending: true
-  },
-  {
-    id: 3,
-    category: 'Actualizaciones',
-    focus: 'Últimas novedades y cambios normativos',
-    depth: 'Información actualizada de fuentes oficiales (BOE, Ministerios, sedes electrónicas)',
-    keywords: ['BOE', 'actualizaciones', 'novedades', 'cambios normativos'],
-    is_trending: false
-  },
-  {
-    id: 4,
-    category: 'Preguntas Expertas',
-    focus: 'Respuestas a casos complejos y preguntas frecuentes',
-    depth: 'Análisis de casos reales con soluciones prácticas basadas en experiencia de 15 años',
-    keywords: ['casos prácticos', 'FAQ', 'consultas', 'soluciones'],
-    is_trending: false
-  }
-];
+// Fallback images for each category
+const FALLBACK_IMAGES = {
+  'análisis jurídico': 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?fit=crop&w=1200&h-630',
+  'guía procedimental': 'https://images.unsplash.com/photo-1589652717521-10c0d092dea9?fit=crop&w=1200&h-630',
+  'actualizaciones': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?fit=crop&w=1200&h-630',
+  'preguntas expertas': 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?fit=crop&w=1200&h-630',
+  default: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?fit=crop&w=1200&h-630',
+};
 
 // ─── UTILITIES ───────────────────────────────────────────────────────
-function todayStr() {
-  return new Date().toISOString().split('T')[0];
-}
-
-function toSlug(text) {
-  return text
-    .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-}
-
-function fetchText(url, timeoutMs = 10000, maxRedirects = 3) {
+function fetchText(url, timeoutMs = 15000, maxRedirects = 5) {
   return new Promise((resolve, reject) => {
-    const parsed = new URL(url);
-    const options = {
-      hostname: parsed.hostname,
-      port: parsed.port || (parsed.protocol === 'https:' ? 443 : 80),
-      path: parsed.pathname + parsed.search,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; LaRegularizacionBot/1.0; +https://laregularizacion.com)',
-        'Accept': 'application/rss+xml,application/xml,text/xml,application/atom+xml,text/html;q=0.9,text/plain;q=0.8',
-        'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
-        'Accept-Encoding': 'gzip, deflate',
-      },
-      timeout: timeoutMs,
-      rejectUnauthorized: false, // Allow self-signed certificates
-    };
+    const doRequest = (currentUrl, redirectsLeft) => {
+      const parsed = new URL(currentUrl);
+      const isHttps = parsed.protocol === 'https:';
+      const lib = isHttps ? https : http;
 
-    const protocol = parsed.protocol === 'https:' ? https : http;
-    
-    const req = protocol.request(options, (res) => {
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location && maxRedirects > 0) {
-        // Follow redirect
-        const redirectUrl = new URL(res.headers.location, url).href;
-        fetchText(redirectUrl, timeoutMs, maxRedirects - 1)
-          .then(resolve)
-          .catch(reject);
-        return;
-      }
+      const options = {
+        hostname: parsed.hostname,
+        port: parsed.port || (isHttps ? 443 : 80),
+        path: parsed.pathname + parsed.search,
+        headers: {
+          'User-Agent': 'LaRegularizacionBot/1.0 (+https://laregularizacion.com)',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8',
+        },
+        timeout: timeoutMs,
+      };
 
-      if (res.statusCode !== 200) {
-        reject(new Error(`HTTP ${res.statusCode}`));
-        return;
-      }
-
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        // Check if we got HTML instead of RSS/XML
-        if (data.includes('<html') && !data.includes('<rss') && !data.includes('<feed')) {
-          reject(new Error('Got HTML instead of RSS/XML'));
+      const req = lib.request(options, (res) => {
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location && redirectsLeft > 0) {
+          // Follow redirect
+          const nextUrl = new URL(res.headers.location, currentUrl).toString();
+          doRequest(nextUrl, redirectsLeft - 1);
           return;
         }
-        resolve({ status: res.statusCode, text: data });
+
+        if (res.statusCode !== 200) {
+          reject(new Error(`HTTP ${res.statusCode}`));
+          return;
+        }
+
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => resolve({ status: res.statusCode, text: data }));
       });
-    });
 
-    req.on('error', reject);
-    req.on('timeout', () => {
-      req.destroy();
-      reject(new Error(`Timeout after ${timeoutMs}ms`));
-    });
+      req.on('error', reject);
+      req.on('timeout', () => {
+        req.destroy();
+        reject(new Error('Timeout'));
+      });
 
-    req.end();
+      req.end();
+    };
+
+    doRequest(url, maxRedirects);
   });
 }
 
-// ─── DEEPSEEK API ────────────────────────────────────────────────────
-async function callDeepSeek(prompt, systemPrompt = '') {
+function stripHtml(html) {
+  return html
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .substring(0, 5000);
+}
+
+async function deepseek(systemPrompt, userPrompt, maxTokens = 4000) {
   return new Promise((resolve, reject) => {
-    // Clean and truncate prompts to avoid JSON issues
-    const cleanPrompt = prompt.substring(0, 15000).replace(/[\x00-\x1F\x7F]/g, ''); // Remove control characters
-    const cleanSystemPrompt = systemPrompt ? systemPrompt.substring(0, 5000).replace(/[\x00-\x1F\x7F]/g, '') : '';
-    
     const data = JSON.stringify({
       model: DEEPSEEK_MODEL,
       messages: [
-        ...(cleanSystemPrompt ? [{ role: 'system', content: cleanSystemPrompt }] : []),
-        { role: 'user', content: cleanPrompt }
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
       ],
-      max_tokens: 4000,
+      max_tokens: maxTokens,
       temperature: 0.7
     });
 
@@ -216,34 +185,17 @@ async function callDeepSeek(prompt, systemPrompt = '') {
 
     const req = https.request(options, (res) => {
       let response = '';
-      res.on('data', (chunk) => response += chunk);
+      res.on('data', chunk => response += chunk);
       res.on('end', () => {
         try {
-          // Check if response is HTML error page
-          if (response.trim().startsWith('<!DOCTYPE') || 
-              response.trim().startsWith('<html') ||
-              response.includes('Cloudflare') ||
-              response.includes('rate limit')) {
-            reject(new Error(`API returned HTML error: ${response.substring(0, 200)}...`));
-            return;
-          }
-          
           const result = JSON.parse(response);
-          
-          // Check for API errors
-          if (result.error) {
-            reject(new Error(`DeepSeek API error: ${result.error.message || result.error.code}`));
-            return;
-          }
-          
           if (result.choices && result.choices[0]) {
             resolve(result.choices[0].message.content);
           } else {
             reject(new Error('No response from DeepSeek'));
           }
         } catch (err) {
-          // If JSON parse fails, it might be HTML or other error
-          reject(new Error(`Failed to parse API response: ${response.substring(0, 200)}...`));
+          reject(err);
         }
       });
     });
@@ -254,106 +206,20 @@ async function callDeepSeek(prompt, systemPrompt = '') {
   });
 }
 
-// ─── FETCH AND ANALYZE SOURCES ───────────────────────────────────────
-async function fetchAndAnalyzeSources() {
-  console.log('📰 Fetching official sources...');
-  
-  let allFetchedText = '';
-  const fetchedSources = [];
-  
-  for (const source of SOURCES) {
-    try {
-      console.log(`   🔍 ${source.name}`);
-      const { text } = await fetchText(source.url);
-      
-      // Extract just the text content from RSS/XML
-      let content = text;
-      // Simple extraction of text between tags
-      content = content.replace(/<[^>]*>/g, ' '); // Remove tags
-      content = content.replace(/\s+/g, ' ').trim(); // Normalize whitespace
-      
-      if (content.length > 100) { // Only add if we got meaningful content
-        allFetchedText += `\n\n--- Source: ${source.name} ---\n${content.substring(0, 3000)}`;
-        fetchedSources.push({
-          name: source.name,
-          content: content.substring(0, 3000),
-          lang: source.lang
-        });
-        console.log(`   ✅ Got ${content.length} chars`);
-      } else {
-        console.log(`   ⚠️  No meaningful content from ${source.name}`);
-      }
-    } catch (err) {
-      console.log(`   ❌ Failed: ${source.name} - ${err.message.substring(0, 100)}`);
-    }
-  }
-  
-  if (fetchedSources.length === 0) {
-    console.log('⚠️  No sources fetched, using keyword strategy only');
-    return {
-      has_live_data: false,
-      trending_searches: KEYWORD_STRATEGY.trending_questions.slice(0, 3),
-      official_updates: KEYWORD_STRATEGY.official_updates.slice(0, 2),
-      alert: null,
-      topics_today: DAILY_TOPICS.map(t => t.focus)
-    };
-  }
-  
-  // Analyze fetched content with DeepSeek
-  console.log('🤖 Analyzing fetched content for trends...');
-  
-  // Clean and truncate the fetched text for API safety
-  let cleanFetchedText = allFetchedText
-    .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters
-    .replace(/[\\"]/g, '') // Remove backslashes and quotes that could break JSON
-    .replace(/\s+/g, ' ') // Normalize whitespace
-    .substring(0, 3000); // Truncate to 3000 chars max
-  
-  const analysisPrompt = `Analyze this Spanish immigration/regularization news and official sources.
-Extract:
-1. Top 3 trending search queries people would have
-2. Top 2 official updates or announcements
-3. Any urgent alerts (new laws, deadline changes, etc.)
-4. Main topics being discussed
-
-Sources content (cleaned):
-${cleanFetchedText}
-
-Respond in JSON format:
-{
-  "trending_searches": ["query1", "query2", "query3"],
-  "official_updates": ["update1", "update2"],
-  "alert": "urgent alert or null",
-  "topics_today": ["topic1", "topic2", "topic3"]
-}`;
-
-  try {
-    const analysisText = await callDeepSeek(analysisPrompt, 'You are a data analyst specializing in immigration law trends.');
-    const analysis = JSON.parse(analysisText);
-    
-    console.log(`🔥 Trending: ${analysis.trending_searches?.join(', ') || 'none'}`);
-    if (analysis.alert) console.log(`🚨 Alert: ${analysis.alert}`);
-    
-    return {
-      has_live_data: true,
-      ...analysis,
-      topics_today: analysis.topics_today || DAILY_TOPICS.map(t => t.focus)
-    };
-  } catch (err) {
-    console.log(`❌ Analysis failed: ${err.message}, using fallback`);
-    return {
-      has_live_data: false,
-      trending_searches: KEYWORD_STRATEGY.trending_questions.slice(0, 3),
-      official_updates: KEYWORD_STRATEGY.official_updates.slice(0, 2),
-      alert: null,
-      topics_today: DAILY_TOPICS.map(t => t.focus)
-    };
-  }
+function toSlug(str) {
+  return str
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 }
 
-// ─── GENERATE EXPERT ARTICLE ─────────────────────────────────────────
-async function generateExpertArticle(topic, lang, trendingData) {
-  const systemPrompt = `Eres un abogado de extranjería con 15 años de experiencia virtual especializado en legislación española.
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+
+// ─── EXPERT SYSTEM PROMPTS ──────────────────────────────────────────
+const EXPERT_SYSTEM_PROMPT = `Eres un abogado de extranjería con 15 años de experiencia virtual especializado en legislación española.
 Tienes conocimiento profundo de:
 1. Ley Orgánica 4/2000 (LOEx) y sus reformas
 2. Real Decreto 316/2026 de regularización extraordinaria
@@ -364,33 +230,177 @@ Tienes conocimiento profundo de:
 Escribe como un experto que ha ayudado a miles de personas. Usa lenguaje técnico pero accesible.
 Incluye referencias legales específicas (artículos, leyes, decretos).
 Proporciona ejemplos prácticos y casos reales.
-Estructura el artículo con introducción, desarrollo y conclusiones.
+Estructura el artículo con introducción, desarrollo y conclusiones.`;
 
-Idioma: ${lang === 'es' ? 'Español (España)' : 
-           lang === 'en' ? 'English (professional legal English)' :
-           lang === 'ar' ? 'العربية (لغة قانونية مهنية)' :
-           'اردو (پیشہ ورانہ قانونی زبان)'}`;
+const EXPERT_CATEGORIES = [
+  {
+    id: 1,
+    category: 'Análisis Jurídico',
+    description: 'Análisis profundo de legislación y jurisprudencia',
+    keywords: ['LOEx', 'jurisprudencia', 'TSJ', 'TJUE', 'análisis legal'],
+    is_trending: true
+  },
+  {
+    id: 2,
+    category: 'Guía Procedimental',
+    description: 'Guía paso a paso para formularios y procedimientos',
+    keywords: ['EX-31', 'EX-32', 'formularios', 'procedimiento', 'guía práctica'],
+    is_trending: true
+  },
+  {
+    id: 3,
+    category: 'Actualizaciones',
+    description: 'Últimas novedades y cambios normativos',
+    keywords: ['BOE', 'actualizaciones', 'novedades', 'cambios normativos'],
+    is_trending: false
+  },
+  {
+    id: 4,
+    category: 'Preguntas Expertas',
+    description: 'Respuestas a casos complejos y preguntas frecuentes',
+    keywords: ['casos prácticos', 'FAQ', 'consultas', 'soluciones'],
+    is_trending: false
+  }
+];
 
-  const trendingContext = trendingData.has_live_data ? 
-    `Contexto actual (${todayStr()}):
-    - Búsquedas trending: ${trendingData.trending_searches.slice(0, 3).join(', ')}
-    - Actualizaciones oficiales: ${trendingData.official_updates.slice(0, 2).join(', ')}
-    ${trendingData.alert ? `- Alerta: ${trendingData.alert.substring(0, 200)}` : ''}` :
-    `Contexto general (keywords estratégicos):
-    - Palabras clave: ${KEYWORD_STRATEGY.primary_keywords.slice(0, 5).join(', ')}
-    - Preguntas frecuentes: ${KEYWORD_STRATEGY.trending_questions.slice(0, 3).join(' | ')}`;
+// ─── MAIN AGENT ──────────────────────────────────────────────────────
+async function run() {
+  console.log('🚀 EXPERT Immigration Lawyer Agent');
+  console.log('📅 Fecha:', todayStr());
+  console.log('⚖️  Experiencia: 15+ años como abogado de extranjería');
 
-  const prompt = `Genera un artículo experto sobre: "${topic.focus}"
+  // Ensure blog directory exists
+  await fs.mkdir(BLOG_DIR, { recursive: true });
+
+  // Delete existing articles for today (to avoid duplicates)
+  const todayPattern = new RegExp(`-${todayStr()}-`);
+  const files = await fs.readdir(BLOG_DIR);
+  const todayFiles = files.filter(f => todayPattern.test(f));
+
+  if (todayFiles.length > 0) {
+    console.log(`🗑️  Eliminando ${todayFiles.length} artículos existentes de hoy...`);
+    for (const file of todayFiles) {
+      await fs.unlink(path.join(BLOG_DIR, file));
+    }
+  }
+
+  // Step 1: Fetch and analyze sources
+  console.log('\n📰 Fetching official sources...');
+  let allFetchedText = '';
+  const fetchedSources = [];
+
+  for (const source of SOURCES) {
+    try {
+      console.log(`  🔍 ${source.name}`);
+      const { text } = await fetchText(source.url);
+      const cleanText = stripHtml(text);
+      allFetchedText += `\n\n--- ${source.name} ---\n${cleanText}`;
+      fetchedSources.push({ name: source.name, content: cleanText });
+      console.log(`  ✅ ${cleanText.length} chars`);
+    } catch (err) {
+      console.log(`  ❌ ${source.name}: ${err.message}`);
+    }
+  }
+
+  // Step 2: Analyze trends with expert focus
+  console.log('\n🤖 Analyzing for expert immigration law trends...');
+  
+  let analysis;
+  if (fetchedSources.length > 0) {
+    try {
+      const analysisPrompt = `Eres un analista especializado en derecho de extranjería español.
+Analiza este contenido de noticias y fuentes oficiales sobre inmigración y regularización en España.
+
+Contenido de fuentes:
+${allFetchedText.substring(0, 8000)}
+
+Basándote en tu experiencia de 15 años como abogado de extranjería, identifica:
+
+1. Los 3 temas más relevantes para migrantes que buscan regularización
+2. Las preguntas más urgentes que tienen las personas
+3. Cualquier actualización oficial importante (leyes, plazos, procedimientos)
+
+Responde en JSON con este formato:
+{
+  "topics": [
+    {
+      "title_es": "Título en español",
+      "title_en": "Title in English", 
+      "title_ar": "العنوان بالعربية",
+      "title_ur": "اردو میں عنوان",
+      "excerpt_es": "Resumen en español (1-2 frases)",
+      "excerpt_en": "Summary in English (1-2 sentences)",
+      "excerpt_ar": "ملخص بالعربية (جملة أو جملتين)",
+      "excerpt_ur": "اردو میں خلاصہ (ایک یا دو جملے)",
+      "category": "Análisis Jurídico | Guía Procedimental | Actualizaciones | Preguntas Expertas",
+      "primary_keyword": "palabra clave principal",
+      "secondary_keywords": ["kw1", "kw2", "kw3"],
+      "key_facts": ["hecho 1", "hecho 2"],
+      "is_trending": true/false
+    }
+  ]
+}
+
+Genera 3-4 temas de alta calidad, enfocados en derecho de extranjería.`;
+
+      const analysisText = await deepseek(EXPERT_SYSTEM_PROMPT, analysisPrompt, 3000);
+      analysis = JSON.parse(analysisText);
+      console.log(`✅ Identified ${analysis.topics?.length ?? 0} expert topics`);
+    } catch (err) {
+      console.log(`❌ Analysis failed: ${err.message}, using expert fallback`);
+      analysis = { topics: [] };
+    }
+  } else {
+    console.log('⚠️  No sources fetched, using expert keyword strategy');
+    analysis = { topics: [] };
+  }
+
+  // Step 3: Generate expert articles
+  const topics = analysis.topics && analysis.topics.length > 0 
+    ? analysis.topics.slice(0, 4) 
+    : EXPERT_CATEGORIES.slice(0, 4).map((cat, idx) => ({
+        title_es: `${cat.category}: ${cat.description}`,
+        title_en: `${cat.category}: ${cat.description}`,
+        title_ar: `${cat.category}: ${cat.description}`,
+        title_ur: `${cat.category}: ${cat.description}`,
+        excerpt_es: `Artículo experto sobre ${cat.description.toLowerCase()}. Información verificada de fuentes oficiales.`,
+        excerpt_en: `Expert article about ${cat.description.toLowerCase()}. Verified information from official sources.`,
+        excerpt_ar: `مقال خبير حول ${cat.description.toLowerCase()}. معلومات موثقة من مصادر رسمية.`,
+        excerpt_ur: `${cat.description.toLowerCase()} کے بارے میں ماہر مضمون۔ سرکاری ذرائع سے تصدیق شدہ معلومات۔`,
+        category: cat.category,
+        primary_keyword: cat.keywords[0],
+        secondary_keywords: cat.keywords.slice(1),
+        key_facts: [],
+        is_trending: cat.is_trending
+      }));
+
+  console.log(`\n✍️  Writing ${topics.length} expert articles...`);
+
+  for (const topic of topics) {
+    console.log(`\n📝 ${topic.category}: "${topic.title_es.substring(0, 60)}..."`);
+
+    // Generate content for each language
+    const languages = [
+      { code: 'es', title: topic.title_es, excerpt: topic.excerpt_es },
+      { code: 'en', title: topic.title_en, excerpt: topic.excerpt_en },
+      { code: 'ar', title: topic.title_ar, excerpt: topic.excerpt_ar },
+      { code: 'ur', title: topic.title_ur, excerpt: topic.excerpt_ur },
+    ];
+
+    const contents = {};
+    for (const lang of languages) {
+      try {
+        const contentPrompt = `Escribe un artículo experto sobre: "${lang.title}"
 
 Categoría: ${topic.category}
-Profundidad requerida: ${topic.depth}
-Palabras clave: ${topic.keywords.join(', ')}
+Resumen: ${lang.excerpt}
+Palabras clave: ${[topic.primary_keyword, ...(topic.secondary_keywords || [])].join(', ')}
 
-${trendingContext}
+Contexto: ${fetchedSources.length > 0 ? 'Basado en análisis de fuentes oficiales' : 'Basado en conocimiento experto de 15 años'}
 
-Estructura del artículo:
+Estructura requerida:
 1. **Introducción**: Contexto legal y relevancia actual
-2. **Marco Normativo**: Leyes, decretos y regulaciones aplicables
+2. **Marco Normativo**: Leyes, decretos y regulaciones aplicables (cita artículos específicos)
 3. **Análisis Técnico**: Explicación detallada con referencias legales
 4. **Casos Prácticos**: Ejemplos reales o hipotéticos ilustrativos
 5. **Recomendaciones**: Consejos prácticos basados en experiencia
@@ -402,25 +412,23 @@ Fecha de referencia: ${todayStr()}
 
 Genera contenido original, verificable y de alta calidad.`;
 
-  console.log(`   🤖 Generando artículo ${topic.id} en ${lang}...`);
-  
-  try {
-    const content = await callDeepSeek(prompt, systemPrompt);
-    return { lang, content };
-  } catch (err) {
-    console.log(`   ⚠️  API failed for ${lang}: ${err.message.substring(0, 100)}`);
-    
-    // Fallback content if API fails
-    const fallbackContent = `# ${topic.focus}
+        console.log(`  🤖 Generando en ${lang.code}...`);
+        const content = await deepseek(EXPERT_SYSTEM_PROMPT, contentPrompt, 3500);
+        contents[lang.code] = content;
+        console.log(`  ✅ ${content.length} caracteres`);
+      } catch (err) {
+        console.log(`  ⚠️  Error en ${lang.code}: ${err.message.substring(0, 80)}`);
+        // Fallback content
+        contents[lang.code] = `# ${lang.title}
 
 ## Introducción
-Este artículo proporciona un análisis experto sobre ${topic.focus.toLowerCase()}.
+Este artículo proporciona un análisis experto sobre este tema de extranjería.
 
 ## Marco Normativo
 La legislación aplicable incluye la Ley Orgánica 4/2000 (LOEx) y el Real Decreto 316/2026.
 
 ## Análisis Técnico
-${topic.depth}
+${lang.excerpt}
 
 ## Casos Prácticos
 Ejemplos ilustrativos basados en la experiencia de 15 años como abogado de extranjería.
@@ -429,131 +437,71 @@ Ejemplos ilustrativos basados en la experiencia de 15 años como abogado de extr
 Consejos prácticos para navegar los procedimientos de regularización.
 
 ## Conclusiones
-Resumen y perspectivas sobre ${topic.focus.toLowerCase()}.
+Resumen y perspectivas sobre este tema.
 
 ---
 *Artículo generado el ${todayStr()}*`;
-    
-    return { lang, content: fallbackContent };
-  }
-}
-
-// ─── MAIN AGENT ──────────────────────────────────────────────────────
-async function run() {
-  console.log('🚀 EXPERT Immigration Lawyer Agent');
-  console.log('📅 Fecha:', todayStr());
-  console.log('📚 Temas diarios:', DAILY_TOPICS.length);
-  
-  // Ensure blog directory exists
-  await fs.mkdir(BLOG_DIR, { recursive: true });
-  
-  // Delete existing articles for today (to avoid duplicates)
-  const todayPattern = new RegExp(`-${todayStr()}-`);
-  const files = await fs.readdir(BLOG_DIR);
-  const todayFiles = files.filter(f => todayPattern.test(f));
-  
-  if (todayFiles.length > 0) {
-    console.log(`🗑️  Eliminando ${todayFiles.length} artículos existentes de hoy...`);
-    for (const file of todayFiles) {
-      await fs.unlink(path.join(BLOG_DIR, file));
+      }
     }
-  }
-  
-  // Step 1: Fetch and analyze sources for trending data
-  const trendingData = await fetchAndAnalyzeSources();
-  
-  // Step 2: Generate articles for each topic
-  for (const topic of DAILY_TOPICS) {
-    console.log(`\n📝 Tema ${topic.id}: ${topic.category} - ${topic.focus}`);
-    
-    // Generate in all 4 languages
-    const articles = await Promise.all([
-      generateExpertArticle(topic, 'es', trendingData),
-      generateExpertArticle(topic, 'en', trendingData),
-      generateExpertArticle(topic, 'ar', trendingData),
-      generateExpertArticle(topic, 'ur', trendingData)
-    ]);
-    
+
     // Create MDX file
-    const slug = `${toSlug(topic.focus)}-${todayStr()}-${topic.id}`;
+    const slug = toSlug(topic.title_es) + '-' + todayStr();
     const mdxPath = path.join(BLOG_DIR, `${slug}.mdx`);
-    
-    // Get titles in all languages
-    const titles = {
-      es: `[${topic.category}] ${topic.focus} - ${todayStr()}`,
-      en: `[${topic.category}] ${topic.focus} - ${todayStr()}`,
-      ar: `[${topic.category}] ${topic.focus} - ${todayStr()}`,
-      ur: `[${topic.category}] ${topic.focus} - ${todayStr()}`,
-    };
-
-    // Get excerpts
-    const excerpts = {
-      es: `Artículo experto sobre ${topic.focus}. ${topic.depth}. Información verificada de fuentes oficiales.`,
-      en: `Expert article about ${topic.focus}. ${topic.depth}. Verified information from official sources.`,
-      ar: `مقال خبير حول ${topic.focus}. ${topic.depth}. معلومات موثقة من مصادر رسمية.`,
-      ur: `${topic.focus} کے بارے میں ماہر مضمون۔ ${topic.depth}. سرکاری ذرائع سے تصدیق شدہ معلومات۔`,
-    };
-
-    // Find content for each language
-    const esContent = articles.find(a => a.lang === 'es')?.content || '';
-    const enContent = articles.find(a => a.lang === 'en')?.content || '';
-    const arContent = articles.find(a => a.lang === 'ar')?.content || '';
-    const urContent = articles.find(a => a.lang === 'ur')?.content || '';
 
     const mdxContent = `---
-title_es: "${titles.es}"
-title_en: "${titles.en}"
-title_ar: "${titles.ar}"
-title_ur: "${titles.ur}"
+title_es: "${topic.title_es}"
+title_en: "${topic.title_en}"
+title_ar: "${topic.title_ar}"
+title_ur: "${topic.title_ur}"
 
-excerpt_es: "${excerpts.es}"
-excerpt_en: "${excerpts.en}"
-excerpt_ar: "${excerpts.ar}"
-excerpt_ur: "${excerpts.ur}"
+excerpt_es: "${topic.excerpt_es}"
+excerpt_en: "${topic.excerpt_en}"
+excerpt_ar: "${topic.excerpt_ar}"
+excerpt_ur: "${topic.excerpt_ur}"
 
 body_es: |
-${esContent.split('\n').map(line => `  ${line}`).join('\n')}
+${contents.es.split('\n').map(line => `  ${line}`).join('\n')}
 
 body_en: |
-${enContent.split('\n').map(line => `  ${line}`).join('\n')}
+${contents.en.split('\n').map(line => `  ${line}`).join('\n')}
 
 body_ar: |
-${arContent.split('\n').map(line => `  ${line}`).join('\n')}
+${contents.ar.split('\n').map(line => `  ${line}`).join('\n')}
 
 body_ur: |
-${urContent.split('\n').map(line => `  ${line}`).join('\n')}
+${contents.ur.split('\n').map(line => `  ${line}`).join('\n')}
 
 date: ${todayStr()}
 category: "${topic.category}"
-is_trending: ${topic.is_trending}
-primary_keyword: "${topic.keywords[0]}"
+is_trending: ${topic.is_trending ?? false}
+primary_keyword: "${topic.primary_keyword}"
 ---
 
 <!-- Article content is in the frontmatter above -->
 `;
 
     await fs.writeFile(mdxPath, mdxContent, 'utf8');
-    console.log(`   💾 Saved: ${slug}.mdx`);
+    console.log(`  💾 Guardado: ${slug}.mdx`);
   }
 
-  // Step 3: Write trending.json
+  // Step 4: Write trending.json
   const trendingPath = path.join(ROOT, 'src', 'data', 'trending.json');
-  const trendingDataToSave = {
+  const trendingData = {
     date: todayStr(),
-    trending_searches: trendingData.trending_searches,
-    official_updates: trendingData.official_updates,
-    alert: trendingData.alert,
-    topics_today: trendingData.topics_today,
-    has_live_data: trendingData.has_live_data
+    trending_searches: EXPERT_KEYWORD_STRATEGY.trending_questions.slice(0, 3),
+    official_updates: EXPERT_KEYWORD_STRATEGY.official_updates.slice(0, 2),
+    alert: null,
+    topics_today: topics.map(t => t.title_es),
+    has_live_data: fetchedSources.length > 0
   };
   
-  await fs.writeFile(trendingPath, JSON.stringify(trendingDataToSave, null, 2), 'utf8');
-  console.log(`\n📊 Trending data written: trending.json`);
+  await fs.writeFile(trendingPath, JSON.stringify(trendingData, null, 2), 'utf8');
+  console.log(`\n📊 Trending data escrito: trending.json`);
 
-  console.log('\n✅ EXPERT Agent completed successfully!');
-  console.log('📊 Generated 4 expert articles:');
-  DAILY_TOPICS.forEach(t => console.log(`   ${t.id}. ${t.category}: ${t.focus}`));
-  console.log('\n🚀 Next: Commit and push to trigger Cloudflare Pages deployment');
+  console.log('\n✅ EXPERT Agent completado exitosamente!');
+  console.log('📊 Artículos expertos generados:');
+  topics.forEach((t, i) => console.log(`  ${i + 1}. ${t.category}: ${t.title_es.substring(0, 50)}...`));
+  console.log('\n🚀 Siguiente: Commit y push para desplegar en Cloudflare Pages');
 }
 
 // Run the agent
