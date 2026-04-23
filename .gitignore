@@ -1,8 +1,9 @@
-node_modules/
-dist/
 .astro/
+dist/
+docs/
+.DS_Store
 .env
 .env.local
 *.log
-.DS_Store
+node_modules/
 Thumbs.db
