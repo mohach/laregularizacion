@@ -1,9 +1,63 @@
 ---
-import Base from "../../layouts/Base.astro";;
+import Base from '../../layouts/Base.astro';
 import { t } from '../../data/translations';
-import PageContent from '../../components/PageContent.astro';
+import Header from '../../components/Header.astro';
+import Countdown from '../../components/Countdown.astro';
+import NewsGrid from '../../components/NewsGrid.astro';
+import Footer from '../../components/Footer.astro';
 const tr = t('ur');
+const R = tr.dir === 'rtl';
+const bf = tr.lang === 'ar' ? 'font-arabic' : tr.lang === 'ur' ? 'font-urdu' : 'font-body';
+const guideHref = tr.lang === 'es' ? '/guia' : `/${tr.lang}/guide`;
+const blogHref = tr.lang === 'es' ? '/blog' : `/${tr.lang}/blog`;
 ---
-<Base tr={tr}>
-  <PageContent tr={tr} />
+<Base tr={tr} simple={true}>
+  <Header tr={tr} />
+
+  <Countdown tr={tr} prefix="hm" />
+
+  <section class="bg-white border-b border-slate-100 py-12 sm:py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="max-w-3xl" style={R ? 'text-align:right;direction:rtl;' : ''}>
+        <div class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-1.5 mb-5">
+          <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse flex-shrink-0"></span>
+          <span class:list={['text-xs text-blue-600 font-semibold', bf]}>{tr.hero.eyebrow}</span>
+        </div>
+        <h1 class:list={['font-display font-bold leading-tight tracking-tight mb-3 text-3xl sm:text-4xl lg:text-5xl text-slate-900']}>
+          {tr.hero.h1}<span class="block text-blue-600">{tr.hero.h1hl}</span>
+        </h1>
+        <p class:list={['text-base font-semibold text-slate-500 mb-3', bf]}>{tr.hero.sub}</p>
+        <p class:list={['text-sm text-slate-400 leading-relaxed mb-8 max-w-2xl', bf]}>{tr.hero.desc}</p>
+        <div class:list={['flex flex-wrap gap-3', R ? 'justify-end' : '']}>
+          <a href={guideHref} class:list={['inline-flex items-center gap-2 bg-blue-700 text-white font-display font-bold text-sm px-5 py-2.5 rounded-xl shadow-md hover:bg-blue-800 transition-all', bf]}>
+            📖 {tr.nav.guide}
+          </a>
+          <a href={blogHref} class:list={['inline-flex items-center gap-2 bg-white text-slate-700 font-display font-semibold text-sm px-5 py-2.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 hover:text-blue-700 transition-all', bf]}>
+            📰 {tr.hero.ctaBlog}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-slate-50 border-b border-slate-100 py-14">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <NewsGrid tr={tr} limit={6} />
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-4 py-6">
+    <div class="text-center text-xs text-slate-400 mb-2">Publicidad</div>
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-2691466441263858"
+         data-ad-slot="1234567890"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
+  <Footer tr={tr} />
 </Base>

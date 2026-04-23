@@ -1,0 +1,93 @@
+---
+import type { Translation } from '../data/translations';
+
+interface Props { tr: Translation }
+const { tr } = Astro.props;
+const isRTL = tr.dir === 'rtl';
+const guideHref = tr.lang === 'es' ? '/guia' : `/${tr.lang}/guide`;
+const blogHref = tr.lang === 'es' ? '/blog' : `/${tr.lang}/blog`;
+const homeHref = tr.lang === 'es' ? '/' : `/${tr.lang}/`;
+---
+
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div style={`
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      height:56px;
+      gap:12px;
+      direction:ltr;
+      ${isRTL ? 'flex-direction:row-reverse;' : ''}
+    `}>
+
+      <!-- LOGO -->
+      <a
+        href={homeHref}
+        style={`display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;${isRTL ? 'flex-direction:row-reverse;' : ''}`}
+      >
+        <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#1d4ed8,#1e3a8a);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 6px rgba(29,78,216,0.35)">
+          <svg width="16" height="16" fill="none" stroke="white" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0119 7.414V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <div style={isRTL ? 'text-align:right' : 'text-align:left'}>
+          <div style={`font-size:13px;font-weight:800;color:#1e40af;line-height:1;font-family:${isRTL ? "'Noto Kufi Arabic',serif" : "'Sora',sans-serif"}`}>
+            {tr.siteName}
+          </div>
+          <div style={`font-size:10px;color:#94a3b8;line-height:1;margin-top:2px;font-family:${isRTL ? "'Noto Kufi Arabic',serif" : "'DM Mono',monospace"}`}>
+            {tr.tagline}
+          </div>
+        </div>
+      </a>
+
+      <!-- DESKTOP NAV LINKS -->
+      <nav style={`align-items:center;gap:2px;flex:1;justify-content:center;${isRTL ? 'flex-direction:row-reverse;' : ''}`}
+           class="hidden lg:flex">
+        {[
+          { href: homeHref, label: tr.nav.home },
+          { href: blogHref, label: tr.nav.blog },
+          { href: guideHref, label: tr.nav.guide },
+          { href: tr.lang === 'es' ? '/about' : `/${tr.lang}/about`, label: tr.lang === 'es' ? 'Sobre' : tr.lang === 'en' ? 'About' : tr.lang === 'ar' ? 'من نحن' : 'ہمارے بارے' },
+          { href: tr.lang === 'es' ? '/contact' : `/${tr.lang}/contact`, label: tr.lang === 'es' ? 'Contacto' : tr.lang === 'en' ? 'Contact' : tr.lang === 'ar' ? 'اتصل بنا' : 'رابطہ' },
+        ].map(link => (
+          <a href={link.href} class="nav-link"
+             style={isRTL ? `font-family:'Noto Kufi Arabic',serif` : ''}>{link.label}</a>
+        ))}
+      </nav>
+
+      <!-- RIGHT GROUP: lang pills + official link -->
+      <div style={`display:flex;align-items:center;gap:8px;flex-shrink:0;${isRTL ? 'flex-direction:row-reverse;' : ''}`}>
+        <!-- Official site -->
+        <a
+          href="https://www.inclusion.gob.es/regularizacion"
+          target="_blank" rel="noopener"
+          class="hidden sm:inline-flex"
+          style={`align-items:center;gap:4px;font-size:11px;font-weight:700;color:#1d4ed8;border:1.5px solid #bfdbfe;border-radius:8px;padding:6px 12px;text-decoration:none;transition:background 0.15s;font-family:${isRTL ? "'Noto Kufi Arabic',serif" : "'Sora',sans-serif"}`}
+        >{tr.nav.official}</a>
+
+        <!-- Language pills -->
+        <div style="display:flex;background:#f1f5f9;border-radius:9px;padding:3px;gap:2px;">
+          {(['es','en','ar','ur'] as const).map(l => (
+            <a
+              href={l === 'es' ? '/' : `/${l}/`}
+              hreflang={l}
+              style={`
+                font-family:'DM Mono',monospace;
+                font-size:10px;font-weight:700;
+                padding:4px 9px;border-radius:7px;
+                text-decoration:none;
+                transition:all 0.15s;
+                ${tr.lang === l
+                  ? 'background:#1d4ed8;color:white;box-shadow:0 1px 4px rgba(29,78,216,0.4);'
+                  : 'color:#64748b;'
+                }
+              `}
+            >{l.toUpperCase()}</a>
+          ))}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</header>

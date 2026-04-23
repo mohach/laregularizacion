@@ -19,6 +19,7 @@ export interface Translation {
   nav: {
     home: string; process: string; requirements: string;
     forms: string; checker: string; blog: string; official: string;
+    guide: string;
   };
 
   // Hero
@@ -106,7 +107,7 @@ const es: Translation = {
   tagline: 'Guía independiente · No oficial',
   unofficial: '⚠️ Sitio no oficial · Solo informativo',
 
-  nav: { home: 'Inicio', process: 'Proceso', requirements: 'Requisitos', forms: 'Formularios', checker: 'Verificador', blog: 'Noticias', official: 'Sede oficial →' },
+  nav: { home: 'Inicio', process: 'Proceso', requirements: 'Requisitos', forms: 'Formularios', checker: 'Verificador', blog: 'Noticias', official: 'Sede oficial →', guide: 'Guía Completa' },
 
   hero: {
     eyebrow: 'RD 316/2026 · BOE 15 abril · Plazo hasta el 30 junio 2026',
@@ -258,7 +259,7 @@ const en: Translation = {
   tagline: 'Independent guide · Unofficial',
   unofficial: '⚠️ Unofficial site · For information only',
 
-  nav: { home: 'Home', process: 'Process', requirements: 'Requirements', forms: 'Forms', checker: 'Checker', blog: 'News', official: 'Official site →' },
+  nav: { home: 'Home', process: 'Process', requirements: 'Requirements', forms: 'Forms', checker: 'Checker', blog: 'News', official: 'Official site →', guide: 'Full Guide' },
 
   hero: {
     eyebrow: 'RD 316/2026 · BOE April 15 · Deadline: June 30, 2026',
@@ -410,7 +411,7 @@ const ar: Translation = {
   tagline: 'دليل مستقل · غير رسمي',
   unofficial: '⚠️ موقع غير رسمي · للأغراض المعلوماتية فقط',
 
-  nav: { home: 'الرئيسية', process: 'الإجراءات', requirements: 'الشروط', forms: 'الاستمارات', checker: 'التحقق', blog: 'الأخبار', official: 'البوابة الرسمية ←' },
+  nav: { home: 'الرئيسية', process: 'الإجراءات', requirements: 'الشروط', forms: 'الاستمارات', checker: 'التحقق', blog: 'الأخبار', official: 'البوابة الرسمية ←', guide: 'الدليل الكامل' },
 
   hero: {
     eyebrow: 'المرسوم 316/2026 · الجريدة الرسمية 15 أبريل · الموعد النهائي: 30 يونيو 2026',
@@ -562,7 +563,7 @@ const ur: Translation = {
   tagline: 'آزاد گائیڈ · غیر سرکاری',
   unofficial: '⚠️ غیر سرکاری ویب سائٹ · صرف معلومات کے لیے',
 
-  nav: { home: 'ہوم', process: 'عمل', requirements: 'شرائط', forms: 'فارم', checker: 'جانچ', blog: 'خبریں', official: 'سرکاری ویب سائٹ ←' },
+  nav: { home: 'ہوم', process: 'عمل', requirements: 'شرائط', forms: 'فارم', checker: 'جانچ', blog: 'خبریں', official: 'سرکاری ویب سائٹ ←', guide: 'مکمل گائیڈ' },
 
   hero: {
     eyebrow: 'فرمان 316/2026 · BOE 15 اپریل · آخری تاریخ: 30 جون 2026',

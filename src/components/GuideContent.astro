@@ -1,0 +1,690 @@
+---
+import type { Translation } from '../data/translations';
+import trending from '../data/trending.json';
+import { readdir, readFile } from 'fs/promises';
+import { join } from 'path';
+import matter from 'gray-matter';
+
+interface Props { tr: Translation }
+const { tr } = Astro.props;
+const R = tr.dir === 'rtl';
+const bf = tr.lang === 'ar' ? 'font-arabic' : tr.lang === 'ur' ? 'font-urdu' : 'font-body';
+
+// Get 6 most recent blog posts for this language
+let recentPosts = [];
+try {
+  const blogDir = join(process.cwd(), 'src', 'content', 'blog');
+  const files = await readdir(blogDir);
+  
+  for (const file of files.filter(f => f.endsWith('.mdx'))) {
+    const raw = await readFile(join(blogDir, file), 'utf8');
+    const { data } = matter(raw);
+    
+    // Get title for current language
+    let title = '';
+    if (tr.lang === 'es') title = data.title_es || data.title_en || '';
+    else if (tr.lang === 'en') title = data.title_en || data.title_es || '';
+    else if (tr.lang === 'ar') title = data.title_ar || data.title_es || '';
+    else if (tr.lang === 'ur') title = data.title_ur || data.title_es || '';
+    
+    if (title) {
+      recentPosts.push({
+        slug: file.replace('.mdx', ''),
+        title: title,
+        category: data.category || 'Noticias',
+        is_trending: data.is_trending || false,
+        date: data.date
+      });
+    }
+  }
+  
+  // Sort by date, most recent first
+  recentPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  
+  // Take only 6 most recent
+  recentPosts = recentPosts.slice(0, 6);
+  
+} catch (e) {
+  console.log('Error loading blog posts:', e.message);
+}
+
+const formLinks: Record<string, string> = {
+  ex31:'https://www.inclusion.gob.es/regularizacion',
+  ex32:'https://www.inclusion.gob.es/regularizacion',
+  vuln:'https://www.inclusion.gob.es/regularizacion',
+  boe:'https://www.boe.es/boe/dias/2026/04/15/pdfs/BOE-A-2026-8284.pdf',
+  tasa:'https://sede.agenciatributaria.gob.es/Sede/procedimientoini/GI01.shtml',
+  faq:'https://www.inclusion.gob.es/regularizacion',
+};
+const colorH: Record<string, string> = {
+  blue:'bg-blue-700', red:'bg-red-600', green:'bg-green-600',
+  gray:'bg-slate-600', purple:'bg-purple-600', teal:'bg-teal-600'
+};
+const colorB: Record<string, string> = {
+  blue:'bg-blue-700 hover:bg-blue-800', red:'bg-red-600 hover:bg-red-700',
+  green:'bg-green-600 hover:bg-green-700', gray:'bg-slate-600 hover:bg-slate-700',
+  purple:'bg-purple-600 hover:bg-purple-700', teal:'bg-teal-600 hover:bg-teal-700'
+};
+---
+
+<!-- ══ HERO ══ -->
+<section class="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-blue-700 text-white">
+  <div class="absolute inset-0 opacity-[0.04]" style="background-image:radial-gradient(circle at 1px 1px,white 1px,transparent 0);background-size:32px 32px"></div>
+  <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-400 via-sky-300 to-blue-400"></div>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20 relative z-10">
+
+    <!--
+      Desktop layout uses pure inline styles — no Tailwind classes that can conflict with dir=rtl
+      LTR: [TEXT ————————————] [COUNTDOWN 280px]
+      RTL: [COUNTDOWN 280px] [TEXT ————————————]
+    -->
+
+    <!-- COUNTDOWN CARD — single instance, unique IDs, JS targets these -->
+    <!-- Mobile: shown above text (lg:hidden) -->
+    <!-- Desktop: hidden here, shown inside the desktop row below -->
+    <div class="flex justify-center mb-8 lg:hidden">
+      <div style="width:280px;" class="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-5 shadow-2xl">
+        <div class:list={['font-mono text-xs text-white/55 uppercase tracking-widest mb-1 text-center', bf]}>{tr.cd.title}</div>
+        <div class:list={['text-xs font-semibold text-amber-300 text-center mb-4', bf]}>{tr.cd.deadline}</div>
+        <div class="grid grid-cols-4 gap-1.5 mb-4">
+          {(['d','h','m','s'] as const).map((u,i) => (
+            <div class="text-center">
+              <div class="bg-black/25 rounded-xl py-2.5 mb-1">
+                <span class="cd-num font-display font-bold text-2xl text-white leading-none" id={`cd-${u}`}>--</span>
+              </div>
+              <span class:list={['font-mono text-xs text-white/45 uppercase tracking-wider block', bf]} id={`cd-${u}-lbl`}>
+                {[tr.cd.days, tr.cd.hours, tr.cd.mins, tr.cd.secs][i]}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div class="h-1 bg-white/10 rounded-full overflow-hidden mb-2.5">
+          <div id="cd-prog" class="h-full bg-gradient-to-r from-green-400 to-sky-400 rounded-full" style="width:0%"></div>
+        </div>
+        <p class:list={['text-xs text-white/40 text-center', bf]} id="cd-msg"></p>
+      </div>
+    </div>
+
+    <!-- MOBILE TEXT -->
+    <div class="flex flex-col gap-8 lg:hidden">
+      <div style={R ? 'text-align:right;direction:rtl;' : ''}>
+        <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-5">
+          <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse flex-shrink-0"></span>
+          <span class:list={['text-xs text-white/75', bf]}>{tr.hero.eyebrow}</span>
+        </div>
+        <h1 class:list={['font-display font-bold leading-tight tracking-tight mb-3 text-3xl sm:text-4xl']}>
+          {tr.hero.h1}<span class="block text-sky-300">{tr.hero.h1hl}</span>
+        </h1>
+        <p class:list={['text-sm font-semibold text-white/65 mb-4', bf]}>{tr.hero.sub}</p>
+        <p class:list={['text-sm text-white/70 leading-relaxed mb-6', bf]}>{tr.hero.desc}</p>
+        <div class="flex flex-wrap gap-3">
+          <a href="#formularios" class:list={['inline-flex items-center gap-2 bg-white text-blue-800 font-display font-bold text-sm px-4 py-2.5 rounded-xl shadow-md hover:bg-blue-50 transition-all', bf]}>{tr.hero.ctaForms}</a>
+          <a href="#quiz" class:list={['inline-flex items-center gap-2 bg-transparent text-white font-display font-semibold text-sm px-4 py-2.5 rounded-xl border-2 border-white/35 hover:bg-white/10 transition-all', bf]}>{tr.hero.ctaChecker}</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESKTOP: side by side, direction controlled by inline style -->
+    <div
+      class="hidden lg:flex items-center gap-10"
+      style={`direction:ltr; flex-direction:${R ? 'row-reverse' : 'row'};`}
+    >
+
+      <!-- COUNTDOWN: fixed 280px, never shrinks -->
+      <div style="width:280px; flex-shrink:0;">
+        <div class="w-full bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-5 shadow-2xl">
+          <div class:list={['font-mono text-xs text-white/55 uppercase tracking-widest mb-1 text-center', bf]}>{tr.cd.title}</div>
+          <div class:list={['text-xs font-semibold text-amber-300 text-center mb-4', bf]}>{tr.cd.deadline}</div>
+          <div class="grid grid-cols-4 gap-1.5 mb-4">
+            {(['d','h','m','s'] as const).map((u,i) => (
+              <div class="text-center">
+                <div class="bg-black/25 rounded-xl py-2.5 mb-1">
+                  <span class="cd-num font-display font-bold text-2xl text-white leading-none" id={`cd-dt-${u}`}>--</span>
+                </div>
+                <span class:list={['font-mono text-xs text-white/45 uppercase tracking-wider block', bf]}>
+                  {[tr.cd.days, tr.cd.hours, tr.cd.mins, tr.cd.secs][i]}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div class="h-1 bg-white/10 rounded-full overflow-hidden mb-2.5">
+            <div id="cd-dt-prog" class="h-full bg-gradient-to-r from-green-400 to-sky-400 rounded-full" style="width:0%"></div>
+          </div>
+          <p class:list={['text-xs text-white/40 text-center', bf]} id="cd-dt-msg"></p>
+        </div>
+      </div>
+
+      <!-- TEXT: takes all remaining space -->
+      <div style={`flex:1; min-width:0; ${R ? 'text-align:right; direction:rtl;' : ''}`}>
+        <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-6">
+          <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse flex-shrink-0"></span>
+          <span class:list={['text-xs text-white/75 tracking-wide', bf]}>{tr.hero.eyebrow}</span>
+        </div>
+
+        <h1 class:list={['font-display font-bold leading-tight tracking-tight mb-3', R ? 'text-3xl' : 'text-4xl sm:text-5xl']}>
+          {tr.hero.h1}<span class="block text-sky-300">{tr.hero.h1hl}</span>
+        </h1>
+        <p class:list={['text-base font-semibold text-white/65 mb-4', bf]}>{tr.hero.sub}</p>
+        <p class:list={['text-sm text-white/70 leading-relaxed mb-8', bf]}>{tr.hero.desc}</p>
+
+        <!-- Buttons: justify-end for RTL so they align right -->
+        <div class:list={['flex flex-wrap gap-3', R ? 'justify-end' : '']}>
+          <a href="#formularios" class:list={['inline-flex items-center gap-2 bg-white text-blue-800 font-display font-bold text-sm px-5 py-2.5 rounded-xl shadow-md hover:bg-blue-50 transition-all hover:-translate-y-0.5', bf]}>{tr.hero.ctaForms}</a>
+          <a href="#quiz" class:list={['inline-flex items-center gap-2 bg-transparent text-white font-display font-semibold text-sm px-5 py-2.5 rounded-xl border-2 border-white/35 hover:bg-white/10 transition-all', bf]}>{tr.hero.ctaChecker}</a>
+          <a href={tr.lang === 'es' ? '/blog' : `/${tr.lang}/blog`} class:list={['inline-flex items-center gap-1.5 text-white/55 font-display font-medium text-xs px-4 py-2.5 rounded-xl border border-white/15 hover:text-white/85 transition-all', bf]}>📰 {tr.hero.ctaBlog} →</a>
+        </div>
+
+        {trending.trending_searches?.length > 0 && (
+          <div class="mt-5">
+            <div class:list={['flex flex-wrap gap-2 mt-1', R ? 'justify-end' : '']}>
+              {trending.trending_searches.slice(0,3).map(s => (
+                <span class:list={['font-mono text-xs bg-white/10 text-white/65 px-2.5 py-1 rounded-full border border-white/10', bf]}>🔥 {s}</span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- Ad Placement 1: After Hero -->
+<div class="max-w-6xl mx-auto px-4 py-6">
+  <div class="text-center text-xs text-slate-500 mb-2">Publicidad</div>
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-2691466441263858"
+       data-ad-slot="1234567890"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>
+       (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</div>
+
+<!-- ══ ALERT ══ -->
+{trending.alert && (
+  <div class="bg-amber-500 text-white">
+    <div class="max-w-6xl mx-auto px-4 py-2.5 text-center">
+      <p class:list={['text-sm font-semibold', bf]}>⚠️ {trending.alert}</p>
+    </div>
+  </div>
+)}
+
+<!-- ══ STAT CARDS ══ -->
+<section class="bg-white border-b border-slate-100 py-7">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {[
+        { label:tr.stats.decree.label,   val:'RD 316/2026',       sub:tr.stats.decree.sub,   badge:tr.stats.decree.badge,   bc:'text-green-700 bg-green-50 border-green-200',  top:'border-t-blue-700'  },
+        { label:tr.stats.deadline.label, val:'30 Jun 2026',       sub:tr.stats.deadline.sub, badge:tr.stats.deadline.badge, bc:'text-red-700 bg-red-50 border-red-200',        top:'border-t-red-600'   },
+        { label:tr.stats.permit.label,   val:tr.stats.permit.val, sub:tr.stats.permit.sub,   badge:tr.stats.permit.badge,   bc:'text-blue-700 bg-blue-50 border-blue-200',     top:'border-t-green-600' },
+        { label:tr.stats.fee.label,      val:'38,28 €',           sub:tr.stats.fee.sub,      badge:tr.stats.fee.badge,      bc:'text-amber-700 bg-amber-50 border-amber-200',  top:'border-t-amber-500' },
+      ].map(s => (
+        <div class:list={['bg-white rounded-xl border border-slate-100 border-t-4 p-3.5 shadow-sm hover:shadow-md transition-shadow', s.top]}>
+          <div class:list={['font-mono text-xs text-slate-400 uppercase tracking-wide mb-1.5', bf]}>{s.label}</div>
+          <div class="font-display text-base font-bold text-slate-800 mb-1">{s.val}</div>
+          <div class:list={['text-xs text-slate-500 mb-2 leading-snug', bf]}>{s.sub}</div>
+          <span class:list={['inline-block font-mono text-xs px-2 py-0.5 rounded-full border font-medium', s.bc]}>{s.badge}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROCESS ══ -->
+<section id="proceso" class="py-14 bg-slate-50">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="mb-8">
+      <span class:list={['inline-block font-mono text-xs uppercase tracking-widest bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-2.5', bf]}>{tr.process.tag}</span>
+      <h2 class:list={['font-display text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight', bf]}>{tr.process.title}</h2>
+      <div class="w-14 h-0.5 bg-blue-600 rounded mt-3 sec-line"></div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+      <!-- Timeline -->
+      <div class:list={['lg:col-span-3', R && 'lg:order-2']}>
+        <!-- RTL: border on right, dot on right -->
+        <div class:list={[
+          'relative space-y-6 tl-line',
+          R ? 'pr-7 border-r-2 border-slate-200' : 'pl-7 border-l-2 border-slate-200'
+        ]}>
+          {tr.process.steps.map(step => (
+            <div class="relative">
+              <div class:list={[
+                'absolute top-1 w-3.5 h-3.5 rounded-full border-2 border-white shadow tl-dot-el',
+                R ? '-right-[33px]' : '-left-[33px]',
+                step.type === 'active' ? 'bg-green-500' : step.type === 'deadline' ? 'bg-red-500' : 'bg-slate-300'
+              ]}></div>
+              <div class="flex items-center gap-2 mb-1 flex-wrap">
+                {step.status && (
+                  <span class:list={['font-mono text-xs font-bold px-2 py-0.5 rounded-full',
+                    step.type === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  ]}>{step.status}</span>
+                )}
+                <span class:list={['font-mono text-xs',
+                  step.type === 'active' ? 'text-green-600' : step.type === 'deadline' ? 'text-red-600' : 'text-slate-400'
+                ]}>{step.date}</span>
+              </div>
+              <h3 class:list={['font-display text-sm font-bold text-slate-800 mb-0.5', bf]}>{step.title}</h3>
+              <p class:list={['text-xs text-slate-500 leading-relaxed', bf]}>{step.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Cities + Contact -->
+      <div class:list={['lg:col-span-2 space-y-3', R && 'lg:order-1']}>
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class:list={['font-mono text-xs text-slate-400 uppercase tracking-widest mb-3', bf]}>{tr.process.citiesTag}</div>
+          {tr.process.cities.map(c => (
+            <div class="flex items-center justify-between py-1.5 border-b border-slate-50 last:border-0 gap-2">
+              <span class:list={['font-display text-xs font-semibold text-slate-700 shrink-0', bf]}>{c.name}</span>
+              <span class:list={['text-xs text-slate-400 flex-1 truncate', bf]}>{c.note}</span>
+              <span class:list={[
+                'font-mono text-xs px-2 py-0.5 rounded-full shrink-0 border',
+                c.status === 'open' ? 'bg-green-50 text-green-700 border-green-200' :
+                c.status === 'busy' ? 'bg-red-50 text-red-700 border-red-200' :
+                'bg-amber-50 text-amber-700 border-amber-200'
+              ]}>
+                {c.status === 'open' ? tr.process.statusOpen : c.status === 'busy' ? tr.process.statusBusy : tr.process.statusWait}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-blue-700 text-white rounded-xl p-3.5 text-center">
+            <div class="text-xl mb-1">📞</div>
+            <div class:list={['text-xs text-blue-200 mb-1', bf]}>{tr.process.phone.label}</div>
+            <div class="font-display text-lg font-bold">060</div>
+            <div class:list={['text-xs text-blue-200 mt-1', bf]}>{tr.process.phone.hours}</div>
+          </div>
+          <div class="bg-slate-800 text-white rounded-xl p-3.5 text-center">
+            <div class="text-xl mb-1">🌐</div>
+            <div class:list={['text-xs text-slate-400 mb-1', bf]}>{tr.process.web.label}</div>
+            <a href="https://www.inclusion.gob.es/regularizacion" target="_blank" rel="noopener"
+               class="font-mono text-xs text-blue-300 hover:text-blue-200 break-all">inclusion.gob.es</a>
+            <div class:list={['text-xs text-slate-500 mt-1', bf]}>{tr.process.web.avail}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ REQUIREMENTS ══ -->
+<section id="requisitos" class="py-14 bg-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="mb-8">
+      <span class:list={['inline-block font-mono text-xs uppercase tracking-widest bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-2.5', bf]}>{tr.reqs.tag}</span>
+      <h2 class:list={['font-display text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight', bf]}>{tr.reqs.title}</h2>
+      <div class="w-14 h-0.5 bg-blue-600 rounded mt-3 mb-3 sec-line"></div>
+      <p class:list={['text-xs text-slate-400 italic max-w-xl', bf]}>{tr.reqs.intro}</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Base reqs -->
+      <div>
+        <div class:list={['font-mono text-xs text-blue-600 uppercase tracking-widest border-b border-blue-100 pb-2 mb-4', bf]}>{tr.reqs.baseTitle}</div>
+        <div class="space-y-2.5">
+          {tr.reqs.base.map(req => (
+            <div class:list={[
+              'group bg-white border border-slate-100 p-3.5 hover:shadow-sm hover:border-slate-200 transition-all cursor-default req-accent-blue',
+              R ? 'rounded-l-xl' : 'rounded-r-xl border-l-3 border-l-blue-700'
+            ]}>
+              <div class="flex gap-3 items-start">
+                <div class="w-5 h-5 rounded-full bg-blue-700 text-white font-mono text-xs flex items-center justify-center shrink-0 mt-0.5 font-bold">{req.num}</div>
+                <div class="flex-1">
+                  <div class:list={['font-display text-xs font-bold text-slate-800 mb-0.5', bf]}>{req.title}</div>
+                  <div class:list={['text-xs text-slate-500 leading-relaxed', bf]}>{req.sub}</div>
+                  {req.tip && <div class:list={['mt-2 hidden group-hover:block text-xs italic text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-2.5 py-1.5 leading-relaxed', bf]}>{req.tip}</div>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Plus criteria -->
+      <div>
+        <div class:list={['font-mono text-xs text-green-600 uppercase tracking-widest border-b border-green-100 pb-2 mb-4', bf]}>{tr.reqs.plusTitle}</div>
+        <div class="space-y-2.5 mb-5">
+          {tr.reqs.plus.map(req => (
+            <div class:list={[
+              'group bg-white border border-slate-100 p-3.5 hover:shadow-sm hover:border-slate-200 transition-all cursor-default req-accent-green',
+              R ? 'rounded-l-xl' : 'rounded-r-xl border-l-3 border-l-green-600'
+            ]}>
+              <div class="flex gap-3 items-start">
+                <div class="w-5 h-5 rounded-full bg-green-600 text-white font-display text-xs flex items-center justify-center shrink-0 mt-0.5 font-bold">{req.code}</div>
+                <div class="flex-1">
+                  <div class:list={['font-display text-xs font-bold text-slate-800 mb-0.5', bf]}>{req.title}</div>
+                  <div class:list={['text-xs text-slate-500 leading-relaxed', bf]}>{req.sub}</div>
+                  {req.tip && <div class:list={['mt-2 hidden group-hover:block text-xs italic text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-2.5 py-1.5 leading-relaxed', bf]}>{req.tip}</div>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="bg-blue-700 text-white rounded-xl p-4 mb-3">
+          <div class:list={['font-mono text-xs text-blue-200 uppercase tracking-widest mb-1.5', bf]}>{tr.reqs.asylumTitle}</div>
+          <p class:list={['text-xs text-blue-100 leading-relaxed', bf]} set:html={tr.reqs.asylumBody} />
+        </div>
+
+        <div class="bg-red-50 border border-red-100 rounded-xl p-4">
+          <div class:list={['font-mono text-xs text-red-600 uppercase tracking-widest mb-2', bf]}>{tr.reqs.exclTitle}</div>
+          <ul class="space-y-1">
+            {tr.reqs.excl.map(item => (
+              <li class:list={['text-xs text-red-700 flex items-start gap-1.5', bf]}>
+                <span class="shrink-0 mt-0.5">❌</span><span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FORMS ══ -->
+<section id="formularios" class="py-14 bg-slate-50">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="mb-8">
+      <span class:list={['inline-block font-mono text-xs uppercase tracking-widest bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-2.5', bf]}>{tr.forms.tag}</span>
+      <h2 class:list={['font-display text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight', bf]}>{tr.forms.title}</h2>
+      <div class="w-14 h-0.5 bg-blue-600 rounded mt-3 mb-3 sec-line"></div>
+      <p class:list={['text-xs text-slate-500 max-w-2xl', bf]}>{tr.forms.desc}</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-7">
+      {tr.forms.cards.map(card => (
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <div class:list={['p-3.5 flex items-center gap-2.5', colorH[card.color] ?? 'bg-blue-700']}>
+            <div class="w-9 h-9 bg-white/15 rounded-lg flex items-center justify-center text-lg shrink-0">{card.icon}</div>
+            <div>
+              <div class:list={['font-display text-sm font-bold text-white', bf]}>{card.title}</div>
+              <div class="font-mono text-xs text-white/60 mt-0.5">{card.ref}</div>
+            </div>
+          </div>
+          <div class="p-3.5">
+            <p class:list={['text-xs text-slate-600 leading-relaxed mb-3', bf]}>{card.desc}</p>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              {card.tags.map(tag => (
+                <span class="font-mono text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full border border-slate-200">{tag}</span>
+              ))}
+            </div>
+            <a href={formLinks[card.id] ?? 'https://www.inclusion.gob.es/regularizacion'} target="_blank" rel="noopener"
+               class:list={['inline-flex items-center gap-1.5 w-full justify-center py-2 px-3.5 rounded-xl text-white font-display text-xs font-bold transition-all hover:-translate-y-0.5', colorB[card.color] ?? 'bg-blue-700 hover:bg-blue-800', bf]}>
+              <svg class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+              </svg>
+              {card.btn}
+            </a>
+            <p class:list={['font-mono text-xs text-slate-400 text-center mt-2', bf]}>📌 {card.note}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Scam alert -->
+    <div class="bg-red-900 text-white rounded-2xl p-5 flex gap-3 items-start">
+      <span class="text-2xl shrink-0">🚨</span>
+      <div>
+        <div class:list={['font-mono text-xs text-red-300 uppercase tracking-widest mb-1.5', bf]}>{tr.forms.scamTitle}</div>
+        <p class:list={['text-xs text-red-100 leading-relaxed', bf]} set:html={tr.forms.scamBody} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ QUIZ ══ -->
+<section id="quiz" class="py-14 bg-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="mb-8">
+      <span class:list={['inline-block font-mono text-xs uppercase tracking-widest bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-2.5', bf]}>{tr.quiz.tag}</span>
+      <h2 class:list={['font-display text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight', bf]}>{tr.quiz.title}</h2>
+      <div class="w-14 h-0.5 bg-blue-600 rounded mt-3 mb-3 sec-line"></div>
+      <p class:list={['text-xs text-slate-400 italic max-w-xl', bf]}>{tr.quiz.desc}</p>
+    </div>
+    <div class="max-w-xl">
+      <div class:list={['bg-slate-50 border border-slate-200 rounded-2xl p-5', bf]} id="quiz-box">
+        <div class="flex items-center justify-between mb-2">
+          <span class:list={['font-mono text-xs text-slate-400 uppercase tracking-widest', bf]}>{tr.quiz.label}</span>
+          <span class:list={['font-mono text-xs text-blue-600 font-medium', bf]} id="q-step">1 {tr.quiz.stepOf} {tr.quiz.questions.length}</span>
+        </div>
+        <div class="h-0.5 bg-slate-200 rounded mb-4 overflow-hidden">
+          <div id="q-prog" class="h-full bg-gradient-to-r from-blue-600 to-sky-400 rounded transition-all duration-500" style="width:16.6%"></div>
+        </div>
+        <div class:list={['font-display text-sm font-bold text-slate-800 mb-1 leading-snug', bf]} id="qq"></div>
+        <div class:list={['text-xs text-slate-400 italic mb-4 leading-relaxed', bf]} id="qh"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="q-opts"></div>
+        <div id="q-result" class="hidden mt-4 rounded-xl p-4 text-center">
+          <div class="text-2xl mb-2" id="qr-icon"></div>
+          <div class:list={['font-display text-sm font-bold mb-2', bf]} id="qr-title"></div>
+          <div class:list={['text-xs leading-relaxed', bf]} id="qr-body"></div>
+          <button id="q-reset" class:list={['mt-3 font-display text-xs font-semibold px-4 py-1.5 bg-white border-2 border-blue-200 text-blue-700 rounded-lg hover:bg-blue-600 hover:text-white transition-all', bf]}>{tr.quiz.reset}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FAQ ══ -->
+<section id="faq" class="py-14 bg-slate-50">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="mb-8">
+      <span class:list={['inline-block font-mono text-xs uppercase tracking-widest bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-2.5', bf]}>{tr.faq.tag}</span>
+      <h2 class:list={['font-display text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight', bf]}>{tr.faq.title}</h2>
+      <div class="w-14 h-0.5 bg-blue-600 rounded mt-3 sec-line"></div>
+    </div>
+    <div class="max-w-3xl space-y-2">
+      {tr.faq.items.map(item => (
+        <details class="group bg-white border border-slate-100 rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
+          <summary
+            style={R
+              ? 'display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;cursor:pointer;font-weight:700;font-size:12px;color:#1e40af;flex-direction:row-reverse;direction:rtl;text-align:right;'
+              : 'display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;cursor:pointer;font-weight:700;font-size:12px;color:#1e40af;'
+            }
+            class:list={[bf]}
+          >
+            <span style={R ? 'text-align:right;flex:1' : 'flex:1'}>{item.q}</span>
+            <svg class="w-4 h-4 text-blue-300 shrink-0 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </summary>
+          </summary>
+          <div
+            class:list={['px-3.5 pb-3.5 text-xs text-slate-600 leading-relaxed border-t border-slate-50 pt-3 faq-answer', bf]}
+            style={R ? 'text-align:right;direction:rtl;' : ''}
+          >{item.a}</div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ══ BLOG PREVIEW ══ -->
+<section class="py-14 bg-white border-t border-slate-100">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h2 class:list={['font-display text-2xl font-bold text-slate-900', bf]}>{tr.blog.title}</h2>
+      </div>
+      <a href={tr.lang === 'es' ? '/blog' : `/${tr.lang}/blog`}
+         class:list={['text-xs font-semibold text-blue-700 hover:text-blue-900 transition-colors shrink-0', bf]}>
+        {tr.blog.readMore}
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {recentPosts.map((post, index) => (
+        <>
+          <a href={tr.lang === 'es' ? `/blog/${post.slug}` : `/${tr.lang}/blog/${post.slug}`}
+             class:list={['bg-slate-50 border border-slate-100 rounded-xl p-4 hover:shadow-sm hover:border-slate-200 transition-all group']}
+             style="text-decoration:none;color:inherit">
+            <div class="flex items-center gap-2 mb-2 flex-wrap">
+              <span class:list={['font-mono text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full', bf]}>{post.category}</span>
+              {post.is_trending && <span class="font-mono text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">{tr.blog.trendingTag}</span>}
+            </div>
+            <h3 class:list={['font-display text-sm font-bold text-slate-800 group-hover:text-blue-700 transition-colors mb-2', bf]}>
+              {post.title}
+            </h3>
+            <time class:list={['font-mono text-xs text-slate-400', bf]}>
+              {new Date(post.date).toLocaleDateString(tr.lang === 'es' ? 'es-ES' : tr.lang === 'en' ? 'en-US' : tr.lang === 'ar' ? 'ar-EG' : 'ur-PK', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+              })}
+            </time>
+          </a>
+          
+          {/* Ad after 3rd post */}
+          {index === 2 && (
+            <div class="md:col-span-2 lg:col-span-3">
+              <div class="text-center text-xs text-slate-500 mb-2">Publicidad</div>
+              <ins class="adsbygoogle"
+                   style="display:block"
+                   data-ad-client="ca-pub-2691466441263858"
+                   data-ad-slot="2345678901"
+                   data-ad-format="auto"
+                   data-full-width-responsive="true"></ins>
+              <script>
+                   (adsbygoogle = window.adsbygoogle || []).push({});
+              </script>
+            </div>
+          )}
+        </>
+      ))}
+
+      {recentPosts.length === 0 && (
+        <div class="col-span-3 bg-slate-50 border border-slate-100 rounded-xl p-6 text-center">
+          <div class="text-3xl mb-2">🤖</div>
+          <p class:list={['text-xs text-slate-400', bf]}>{tr.blog.noArticles}</p>
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<script define:vars={{
+  questions: tr.quiz.questions,
+  resTitles: tr.quiz.resultTitles,
+  resOk: tr.quiz.resultOk,
+  stepOf: tr.quiz.stepOf,
+  nSteps: tr.quiz.questions.length,
+  cdEnded: tr.cd.ended,
+  langCode: tr.lang,
+}}>
+// ── COUNTDOWN ──
+const DEADLINE = new Date('2026-06-30T23:59:59').getTime();
+const START    = new Date('2026-04-16T00:00:00').getTime();
+
+function flip(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const s = String(val).padStart(2,'0');
+  if (el.textContent !== s) {
+    el.classList.remove('flip'); void el.offsetWidth;
+    el.classList.add('flip'); el.textContent = s;
+  }
+}
+
+const urgMsg = {
+  es: d => d <= 10 ? `⚠️ ¡Solo ${d} días!` : `Quedan ${d} días · Actúa ya`,
+  en: d => d <= 10 ? `⚠️ ${d} days left!` : `${d} days remaining`,
+  ar: d => d <= 10 ? `⚠️ ${d} أيام فقط!` : `تبقّى ${d} يوماً`,
+  ur: d => d <= 10 ? `⚠️ صرف ${d} دن!` : `${d} دن باقی`,
+};
+
+function tick() {
+  const now = Date.now(), diff = DEADLINE - now;
+  if (diff <= 0) {
+    ['d','h','m','s'].forEach(u => {
+      ['cd-','cd-dt-'].forEach(pfx => { const e = document.getElementById(`${pfx}${u}`); if(e) e.textContent='00'; });
+    });
+    ['cd-msg','cd-dt-msg'].forEach(id => { const m = document.getElementById(id); if(m) m.textContent = cdEnded; });
+    return;
+  }
+  const vals = {
+    d: Math.floor(diff/86400000),
+    h: Math.floor(diff%86400000/3600000),
+    m: Math.floor(diff%3600000/60000),
+    s: Math.floor(diff%60000/1000),
+  };
+  // Update both mobile and desktop countdown elements
+  ['d','h','m','s'].forEach(u => {
+    flip('cd-' + u, vals[u]);
+    // Desktop: direct set (no flip animation needed, same value)
+    const dt = document.getElementById('cd-dt-' + u);
+    if(dt) { const s2 = String(vals[u]).padStart(2,'0'); if(dt.textContent !== s2) dt.textContent = s2; }
+  });
+  const pct = Math.min(100, Math.max(0, (now-START)/(DEADLINE-START)*100));
+  ['cd-prog','cd-dt-prog'].forEach(id => { const p = document.getElementById(id); if(p) p.style.width = pct.toFixed(2)+'%'; });
+  const dLeft = Math.ceil(diff/86400000);
+  const msg = (urgMsg[langCode]||urgMsg.es)(dLeft);
+  ['cd-msg','cd-dt-msg'].forEach(id => { const m = document.getElementById(id); if(m) m.textContent = msg; });
+}
+tick(); setInterval(tick, 1000);
+
+// ── QUIZ ──
+let step = 0;
+
+function renderQuiz() {
+  const s = questions[step];
+  document.getElementById('qq').textContent = s.q;
+  document.getElementById('qh').textContent = s.hint;
+  document.getElementById('q-step').textContent = `${step+1} ${stepOf} ${nSteps}`;
+  document.getElementById('q-prog').style.width = `${(step+1)/nSteps*100}%`;
+  document.getElementById('q-result').className = 'hidden mt-4 rounded-xl p-4 text-center';
+  const box = document.getElementById('q-opts');
+  box.innerHTML = '';
+  s.opts.forEach(opt => {
+    const b = document.createElement('button');
+    b.textContent = opt.label;
+    // qbtn class gets RTL text-align from our CSS
+    b.className = 'qbtn w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-200 bg-white text-xs text-slate-700 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-800 transition-all duration-150';
+    b.onclick = () => {
+      box.querySelectorAll('button').forEach(x => x.classList.remove('!border-green-500','!bg-green-50','!border-red-500','!bg-red-50'));
+      b.classList.add(opt.fail ? '!border-red-500' : '!border-green-500', opt.fail ? '!bg-red-50' : '!bg-green-50');
+      setTimeout(() => {
+        if (opt.fail) showResult('fail', opt.fail);
+        else if (opt.warn) showResult('warn', opt.warn);
+        else if (step < questions.length-1) { step++; renderQuiz(); }
+        else showResult('ok');
+      }, 360);
+    };
+    box.appendChild(b);
+  });
+}
+
+function showResult(type, msg='') {
+  document.getElementById('q-opts').innerHTML='';
+  document.getElementById('qq').textContent='';
+  document.getElementById('qh').textContent='';
+  const r = document.getElementById('q-result');
+  const C = {
+    ok:   { icon:'🎉', title:resTitles.ok,   body:resOk, cls:'mt-4 rounded-xl p-4 text-center bg-green-50 border-2 border-green-200' },
+    fail: { icon:'⛔', title:resTitles.fail,  body:msg,   cls:'mt-4 rounded-xl p-4 text-center bg-red-50 border-2 border-red-200' },
+    warn: { icon:'⚠️', title:resTitles.warn, body:msg,   cls:'mt-4 rounded-xl p-4 text-center bg-amber-50 border-2 border-amber-200' },
+  };
+  const c = C[type];
+  r.className = c.cls;
+  document.getElementById('qr-icon').textContent = c.icon;
+  document.getElementById('qr-title').textContent = c.title;
+  document.getElementById('qr-body').textContent = c.body;
+}
+
+document.getElementById('q-reset')?.addEventListener('click', () => { step=0; renderQuiz(); });
+renderQuiz();
+
+// ── SCROLL REVEAL ──
+const obs = new IntersectionObserver(entries =>
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); }),
+  { threshold: 0.1 }
+);
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>

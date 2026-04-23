@@ -1,0 +1,15 @@
+---
+import Base from '../../layouts/Base.astro';
+import { t } from '../../data/translations';
+import Header from '../../components/Header.astro';
+import Countdown from '../../components/Countdown.astro';
+import GuideContent from '../../components/GuideContent.astro';
+import Footer from '../../components/Footer.astro';
+const tr = t('ur');
+---
+<Base tr={tr} simple={true}>
+  <Header tr={tr} />
+  <Countdown tr={tr} prefix="gd" />
+  <GuideContent tr={tr} />
+  <Footer tr={tr} />
+</Base>
