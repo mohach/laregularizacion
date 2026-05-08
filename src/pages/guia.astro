@@ -1,15 +1,198 @@
 ---
 import Base from '../layouts/Base.astro';
-import { t } from '../data/translations';
-import Header from '../components/Header.astro';
-import Countdown from '../components/Countdown.astro';
-import GuideContent from '../components/GuideContent.astro';
-import Footer from '../components/Footer.astro';
-const tr = t('es');
 ---
-<Base tr={tr} simple={true}>
-  <Header tr={tr} />
-  <Countdown tr={tr} prefix="gd" />
-  <GuideContent tr={tr} />
-  <Footer tr={tr} />
+
+<Base title="Guía Completa — Regularización Extraordinaria España 2026">
+  <div style="background:var(--white); border-bottom:1px solid var(--border); padding:1.5rem 0">
+    <div class="container">
+      <div data-lang="es">
+        <div style="font-family:var(--font-ui);font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink-3);margin-bottom:0.25rem">Guía completa</div>
+        <h1 style="font-size:2rem;margin:0">Guía paso a paso</h1>
+        <p style="color:var(--ink-2);margin-top:0.5rem;font-size:0.95rem">Todo lo que necesitas saber para tramitar la regularización extraordinaria</p>
+      </div>
+      <div data-lang="ar" style="display:none" dir="rtl">
+        <h1 style="font-size:2rem;margin:0;font-family:'Noto Naskh Arabic','Scheherazade New',serif">دليل خطوة بخطوة</h1>
+        <p style="font-family:'Noto Naskh Arabic','Scheherazade New',serif;color:var(--ink-2);margin-top:0.5rem">كل ما تحتاج معرفته لمعالجة التسوية الاستثنائية</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="padding: 2.5rem 0">
+    <div class="content-with-sidebar">
+
+      <!-- MAIN GUIDE -->
+      <div>
+
+        <!-- ES -->
+        <div data-lang="es">
+          <div class="info-box">
+            <h4>⚡ Resumen rápido</h4>
+            <ul>
+              <li>Plazo: hasta el <strong>30 de junio de 2026</strong></li>
+              <li>No necesitas cita previa — presentación directa</li>
+              <li>Dos vías: DT5 (asilo) y DT6 (arraigo)</li>
+              <li>Formularios: EX-31 (DT5) y EX-32 (DT6)</li>
+              <li>Tasa: 10,50 € — Modelo 790 Código 052</li>
+              <li>Suspende la expulsión durante tramitación</li>
+            </ul>
+          </div>
+
+          <h2 style="margin:2rem 0 1rem" id="paso1">Paso 1: Determina tu vía</h2>
+          <p>Antes de recopilar documentación, debes identificar si te corresponde la <strong>vía DT5</strong> o la <strong>vía DT6</strong>:</p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.25rem 0">
+            <div style="background:var(--white);border:1px solid var(--border);border-top:4px solid var(--red);padding:1.25rem">
+              <div style="font-family:var(--font-ui);font-weight:700;font-size:1.1rem;margin-bottom:0.75rem">Vía DT5</div>
+              <p style="font-size:0.88rem;color:var(--ink-2)">Para personas que solicitaron <strong>asilo o protección internacional</strong> antes del 1 de enero de 2026 y cuyo expediente está pendiente o fue denegado.</p>
+            </div>
+            <div style="background:var(--white);border:1px solid var(--border);border-top:4px solid var(--ink);padding:1.25rem">
+              <div style="font-family:var(--font-ui);font-weight:700;font-size:1.1rem;margin-bottom:0.75rem">Vía DT6</div>
+              <p style="font-size:0.88rem;color:var(--ink-2)">Para todos los demás. Necesitas demostrar <strong>arraigo laboral</strong> (90 días trabajados u oferta de trabajo), <strong>arraigo familiar</strong> (familiar con residencia legal) o <strong>vulnerabilidad social</strong>.</p>
+            </div>
+          </div>
+
+          <h2 style="margin:2rem 0 1rem" id="paso2">Paso 2: Reúne la documentación</h2>
+          <p><strong>Documentación común a ambas vías:</strong></p>
+          <ul style="list-style:disc;padding-left:1.5rem;margin:0.75rem 0;line-height:1.9">
+            <li>Pasaporte o documento de viaje válido (o copia si está caducado)</li>
+            <li>Padrón municipal o cualquier prueba de residencia en España</li>
+            <li>Certificado de antecedentes penales del país de origen (apostillado si aplica)</li>
+            <li>Fotografías recientes en color</li>
+            <li>Formulario EX-31 (DT5) o EX-32 (DT6) cumplimentado</li>
+            <li>Justificante del pago de la tasa — Modelo 790 Código 052 (10,50 €)</li>
+          </ul>
+
+          <p style="margin-top:1rem"><strong>Documentación adicional DT6 — arraigo laboral:</strong></p>
+          <ul style="list-style:disc;padding-left:1.5rem;margin:0.75rem 0;line-height:1.9">
+            <li>Contrato de trabajo o carta de oferta de empleo firmada por el empleador</li>
+            <li>O bien: informes de vida laboral con al menos 90 días cotizados</li>
+          </ul>
+
+          <h2 style="margin:2rem 0 1rem" id="paso3">Paso 3: Paga la tasa</h2>
+          <p>La tasa es de <strong>10,50 euros</strong>. Debes cumplimentar el <strong>Modelo 790 Código 052</strong>:</p>
+          <ol style="list-style:decimal;padding-left:1.5rem;margin:0.75rem 0;line-height:2">
+            <li>Descárgalo en <a href="https://sede.agenciatributaria.gob.es" target="_blank" style="color:var(--red)">sede.agenciatributaria.gob.es</a></li>
+            <li>Rellena tus datos personales y selecciona el código 052</li>
+            <li>Paga en cualquier banco o caja de ahorros</li>
+            <li>Guarda el justificante sellado por el banco</li>
+          </ol>
+
+          <h2 style="margin:2rem 0 1rem" id="cita">Paso 4: Presenta la solicitud</h2>
+          <p>La regularización <strong>no requiere cita previa</strong>. Debes presentarte en persona en la <strong>Oficina de Extranjería</strong> de la provincia donde estás empadronado:</p>
+          <ul style="list-style:disc;padding-left:1.5rem;margin:0.75rem 0;line-height:1.9">
+            <li>Lleva TODA la documentación en original y fotocopia</li>
+            <li>Ve temprano — puede haber cola</li>
+            <li>También puedes presentar por correo certificado (solo algunas oficinas)</li>
+            <li>Las organizaciones colaboradoras inscritas pueden presentar en tu nombre</li>
+          </ul>
+
+          <h2 style="margin:2rem 0 1rem">Paso 5: Resolución y TIE</h2>
+          <p>Tras la solicitud recibirás un <strong>resguardo</strong> que acredita que tienes solicitud en trámite. Con ese documento:</p>
+          <ul style="list-style:disc;padding-left:1.5rem;margin:0.75rem 0;line-height:1.9">
+            <li>Queda <strong>suspendido cualquier expediente de expulsión</strong></li>
+            <li>Puedes trabajar legalmente durante la tramitación</li>
+            <li>Cuando se resuelva favorablemente, se emite el <strong>TIE provisional de 1 año</strong></li>
+            <li>Renovable en condiciones ordinarias (arraigo laboral, etc.)</li>
+          </ul>
+        </div>
+
+        <!-- AR Guide -->
+        <div data-lang="ar" style="display:none" dir="rtl" class="ar">
+          <div class="info-box ar" style="text-align:right">
+            <h4>⚡ ملخص سريع</h4>
+            <ul style="padding-right:1.5rem;padding-left:0">
+              <li>الموعد النهائي: حتى <strong>30 يونيو 2026</strong></li>
+              <li>لا تحتاج موعداً مسبقاً — تقديم مباشر</li>
+              <li>مساران: DT5 (اللجوء) و DT6 (الاندماج)</li>
+              <li>الاستمارات: EX-31 (DT5) و EX-32 (DT6)</li>
+              <li>الرسوم: 10.50 يورو — نموذج 790 رمز 052</li>
+              <li>يوقف الترحيل أثناء المعالجة</li>
+            </ul>
+          </div>
+
+          <h2 style="margin:2rem 0 1rem;font-family:'Noto Naskh Arabic','Scheherazade New',serif">الخطوة 1: حدد مسارك</h2>
+          <p style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">قبل جمع الوثائق، عليك تحديد ما إذا كان ينبغي لك اتباع <strong>المسار DT5</strong> أو <strong>المسار DT6</strong>.</p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.25rem 0">
+            <div style="background:var(--white);border:1px solid var(--border);border-top:4px solid var(--red);padding:1.25rem;text-align:right">
+              <div style="font-family:'Noto Naskh Arabic','Scheherazade New',serif;font-weight:700;font-size:1.05rem;margin-bottom:0.75rem">المسار DT5</div>
+              <p style="font-family:'Noto Naskh Arabic','Scheherazade New',serif;font-size:0.88rem;color:var(--ink-2)">للأشخاص الذين تقدموا بطلب <strong>لجوء أو حماية دولية</strong> قبل 1 يناير 2026 وملفهم معلق أو مرفوض.</p>
+            </div>
+            <div style="background:var(--white);border:1px solid var(--border);border-top:4px solid var(--ink);padding:1.25rem;text-align:right">
+              <div style="font-family:'Noto Naskh Arabic','Scheherazade New',serif;font-weight:700;font-size:1.05rem;margin-bottom:0.75rem">المسار DT6</div>
+              <p style="font-family:'Noto Naskh Arabic','Scheherazade New',serif;font-size:0.88rem;color:var(--ink-2)">للجميع الآخرين. تحتاج إلى إثبات <strong>اندماج مهني</strong> (90 يوم عمل أو عرض عمل) أو <strong>اندماج عائلي</strong> أو <strong>هشاشة اجتماعية</strong>.</p>
+            </div>
+          </div>
+
+          <h2 style="margin:2rem 0 1rem;font-family:'Noto Naskh Arabic','Scheherazade New',serif">الخطوة 2: اجمع الوثائق</h2>
+          <ul style="list-style:disc;padding-right:1.5rem;padding-left:0;margin:0.75rem 0;line-height:2;font-family:'Noto Naskh Arabic','Scheherazade New',serif">
+            <li>جواز سفر أو وثيقة سفر سارية (أو نسخة إن انتهت)</li>
+            <li>شهادة تسجيل بلدي أو أي دليل على الإقامة في إسبانيا</li>
+            <li>شهادة عدم السوابق الجنائية من بلد المنشأ (مصادق عليها إن لزم)</li>
+            <li>صور حديثة ملونة</li>
+            <li>استمارة EX-31 (DT5) أو EX-32 (DT6) مكتملة</li>
+            <li>إيصال دفع الرسوم — نموذج 790 رمز 052 (10.50 يورو)</li>
+          </ul>
+
+          <h2 style="margin:2rem 0 1rem;font-family:'Noto Naskh Arabic','Scheherazade New',serif">الخطوة 3: ادفع الرسوم</h2>
+          <p style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">الرسوم <strong>10.50 يورو</strong> عبر <strong>نموذج 790 رمز 052</strong> في أي بنك إسباني.</p>
+
+          <h2 style="margin:2rem 0 1rem;font-family:'Noto Naskh Arabic','Scheherazade New',serif" id="cita">الخطوة 4: قدّم الطلب</h2>
+          <p style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">التسوية <strong>لا تتطلب موعداً مسبقاً</strong>. توجه شخصياً إلى <strong>مكتب الأجانب</strong> في المقاطعة التي أنت مسجل فيها.</p>
+
+          <h2 style="margin:2rem 0 1rem;font-family:'Noto Naskh Arabic','Scheherazade New',serif">الخطوة 5: القرار وبطاقة TIE</h2>
+          <p style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">بعد الطلب ستحصل على <strong>وصل استلام</strong> يثبت أن طلبك قيد المعالجة. بهذه الوثيقة يُعلَّق <strong>أي إجراء ترحيل</strong> وتستطيع العمل بشكل قانوني.</p>
+        </div>
+
+      </div>
+
+      <!-- SIDEBAR -->
+      <div>
+        <div style="position:sticky;top:80px">
+          <div class="info-box" data-lang="es">
+            <h4>🔗 Fuentes Oficiales</h4>
+            <ul>
+              <li><a href="https://www.inclusion.gob.es/regularizacion" target="_blank" style="color:var(--red)">Ministerio de Inclusión</a></li>
+              <li><a href="https://www.boe.es/boe/dias/2026/03/05/" target="_blank" style="color:var(--red)">BOE — RD 316/2026</a></li>
+              <li><a href="https://extranjeros.inclusion.gob.es" target="_blank" style="color:var(--red)">Extranjeros.gob.es</a></li>
+              <li><a href="https://sede.administracionespublicas.gob.es" target="_blank" style="color:var(--red)">Sede Electrónica</a></li>
+            </ul>
+          </div>
+          <div class="info-box" data-lang="ar" style="display:none;text-align:right">
+            <h4>🔗 المصادر الرسمية</h4>
+            <ul style="padding-right:1rem;padding-left:0;font-family:'Noto Naskh Arabic','Scheherazade New',serif">
+              <li><a href="https://www.inclusion.gob.es/regularizacion" target="_blank" style="color:var(--red)">وزارة الشمول</a></li>
+              <li><a href="https://www.boe.es/boe/dias/2026/03/05/" target="_blank" style="color:var(--red)">BOE — المرسوم الملكي</a></li>
+              <li><a href="https://extranjeros.inclusion.gob.es" target="_blank" style="color:var(--red)">extranjeros.gob.es</a></li>
+            </ul>
+          </div>
+          <div class="info-box" style="margin-top:1rem" data-lang="es">
+            <h4>📅 Fechas Clave</h4>
+            <ul>
+              <li><strong>5 mar 2026</strong> — Publicación BOE</li>
+              <li><strong>Apr 2026</strong> — Apertura de solicitudes</li>
+              <li><strong>30 jun 2026</strong> — Cierre definitivo</li>
+            </ul>
+          </div>
+          <div class="info-box" style="margin-top:1rem;text-align:right" data-lang="ar" style="display:none">
+            <h4>📅 التواريخ الرئيسية</h4>
+            <ul style="padding-right:1rem;padding-left:0;font-family:'Noto Naskh Arabic','Scheherazade New',serif">
+              <li><strong>5 مارس 2026</strong> — نشر المرسوم</li>
+              <li><strong>أبريل 2026</strong> — فتح الطلبات</li>
+              <li><strong>30 يونيو 2026</strong> — الإغلاق النهائي</li>
+            </ul>
+          </div>
+          <div class="info-box" style="margin-top:1rem;background:var(--red);border-color:var(--red)">
+            <h4 style="color:rgba(255,255,255,0.8)" data-lang="es">🤖 Agente IA</h4>
+            <h4 style="color:rgba(255,255,255,0.8);font-family:'Noto Naskh Arabic','Scheherazade New',serif;display:none" data-lang="ar">🤖 وكيل الذكاء الاصطناعي</h4>
+            <p style="color:rgba(255,255,255,0.85);font-size:0.85rem" data-lang="es">¿Tienes una pregunta específica? Nuestro agente IA puede ayudarte con tu caso concreto.</p>
+            <p style="color:rgba(255,255,255,0.85);font-size:0.85rem;font-family:'Noto Naskh Arabic','Scheherazade New',serif;display:none;text-align:right" data-lang="ar">هل لديك سؤال محدد؟ يمكن لوكيلنا الذكي مساعدتك في حالتك الخاصة.</p>
+            <a href="/agente" style="display:inline-block;margin-top:0.75rem;background:white;color:var(--red);font-family:var(--font-ui);font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.5rem 1rem;border-radius:2px" data-lang="es">Consultar al Agente →</a>
+            <a href="/agente" style="display:none;margin-top:0.75rem;background:white;color:var(--red);font-family:'Noto Naskh Arabic','Scheherazade New',serif;font-size:0.85rem;font-weight:700;padding:0.5rem 1rem;border-radius:2px" data-lang="ar">← استشر الوكيل</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </Base>

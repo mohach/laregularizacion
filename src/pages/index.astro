@@ -1,67 +1,311 @@
 ---
 import Base from '../layouts/Base.astro';
-import { t } from '../data/translations';
-import Header from '../components/Header.astro';
-import Countdown from '../components/Countdown.astro';
-import NewsGrid from '../components/NewsGrid.astro';
-import Footer from '../components/Footer.astro';
-const tr = t('es');
-const R = tr.dir === 'rtl';
-const bf = tr.lang === 'ar' ? 'font-arabic' : tr.lang === 'ur' ? 'font-urdu' : 'font-body';
-const guideHref = tr.lang === 'es' ? '/guia' : `/${tr.lang}/guide`;
-const blogHref = tr.lang === 'es' ? '/blog' : `/${tr.lang}/blog`;
 ---
-<Base tr={tr} simple={true}>
-  <Header tr={tr} />
 
-  <!-- COUNTDOWN full-width -->
-  <Countdown tr={tr} prefix="hm" />
+<Base title="Inicio — Regularización Extraordinaria España 2026">
 
-  <!-- HERO SECTION — minimal, just intro text -->
-  <section class="bg-white border-b border-slate-100 py-12 sm:py-16">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="max-w-3xl" style={R ? 'text-align:right;direction:rtl;' : ''}>
-        <div class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-1.5 mb-5">
-          <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse flex-shrink-0"></span>
-          <span class:list={['text-xs text-blue-600 font-semibold', bf]}>{tr.hero.eyebrow}</span>
+  <!-- COUNTDOWN BAND -->
+  <div class="countdown-band">
+    <div class="container">
+      <div data-lang="es">
+        <div class="label">⏳ TIEMPO RESTANTE PARA SOLICITAR — PLAZO: 30 JUNIO 2026</div>
+      </div>
+      <div data-lang="ar" style="display:none">
+        <div class="label-ar">⏳ الوقت المتبقي للتقديم — الموعد النهائي: 30 يونيو 2026</div>
+      </div>
+      <div class="countdown-digits">
+        <div class="countdown-unit">
+          <div class="num" id="cd-days">--</div>
+          <div class="unit-label" id="cd-days-label">Días</div>
         </div>
-        <h1 class:list={['font-display font-bold leading-tight tracking-tight mb-3 text-3xl sm:text-4xl lg:text-5xl text-slate-900']}>
-          {tr.hero.h1}<span class="block text-blue-600">{tr.hero.h1hl}</span>
-        </h1>
-        <p class:list={['text-base font-semibold text-slate-500 mb-3', bf]}>{tr.hero.sub}</p>
-        <p class:list={['text-sm text-slate-400 leading-relaxed mb-8 max-w-2xl', bf]}>{tr.hero.desc}</p>
-        <div class:list={['flex flex-wrap gap-3', R ? 'justify-end' : '']}>
-          <a href={guideHref} class:list={['inline-flex items-center gap-2 bg-blue-700 text-white font-display font-bold text-sm px-5 py-2.5 rounded-xl shadow-md hover:bg-blue-800 transition-all', bf]}>
-            📖 {tr.nav.guide}
-          </a>
-          <a href={blogHref} class:list={['inline-flex items-center gap-2 bg-white text-slate-700 font-display font-semibold text-sm px-5 py-2.5 rounded-xl border-2 border-slate-200 hover:border-blue-300 hover:text-blue-700 transition-all', bf]}>
-            📰 {tr.hero.ctaBlog}
-          </a>
+        <div class="countdown-unit">
+          <div class="num" id="cd-hours">--</div>
+          <div class="unit-label" id="cd-hours-label">Horas</div>
+        </div>
+        <div class="countdown-unit">
+          <div class="num" id="cd-mins">--</div>
+          <div class="unit-label" id="cd-mins-label">Minutos</div>
+        </div>
+        <div class="countdown-unit">
+          <div class="num" id="cd-secs">--</div>
+          <div class="unit-label" id="cd-secs-label">Segundos</div>
+        </div>
+      </div>
+      <div class="deadline-note" data-lang="es">
+        Fecha límite: <strong>30 de junio de 2026</strong> — Real Decreto 316/2026
+      </div>
+      <div class="deadline-note ar" data-lang="ar" style="display:none; font-family:'Noto Naskh Arabic','Scheherazade New',serif">
+        الموعد النهائي: <strong>30 يونيو 2026</strong> — المرسوم الملكي 316/2026
+      </div>
+    </div>
+  </div>
+
+  <!-- LEAD SECTION -->
+  <section class="lead-section">
+    <div class="container">
+
+      <!-- ES Lead -->
+      <div data-lang="es">
+        <div class="lead-grid">
+          <article class="lead-article">
+            <div class="category-tag">Oficial</div>
+            <h1>Regularización Extraordinaria 2026: Todo lo que necesitas saber para solicitar tu residencia</h1>
+            <p class="summary">
+              El Real Decreto 316/2026, publicado el 5 de marzo en el BOE, abre el plazo para que más de 500.000 personas en situación irregular en España regularicen su situación. Las solicitudes están abiertas hasta el 30 de junio de 2026.
+            </p>
+            <div class="info-box">
+              <h4>Claves del proceso</h4>
+              <ul>
+                <li>Residencia mínima antes del 31 dic. 2025 (5 meses para DT6, acreditación para DT5)</li>
+                <li>Sin antecedentes penales en España ni en país de origen</li>
+                <li>Vía DT5: solicitantes de asilo anterior al 1 ene. 2026</li>
+                <li>Vía DT6: arraigo laboral, familiar o vulnerabilidad social</li>
+                <li>Permiso inicial de 1 año + autorización de trabajo inmediata</li>
+                <li>Los menores se regularizan simultáneamente por 5 años</li>
+              </ul>
+            </div>
+            <div class="meta">
+              <strong>Fuente:</strong> BOE nº 57 — 5 marzo 2026 · <strong>Plazo:</strong> Hasta el 30 junio 2026
+            </div>
+          </article>
+          <aside class="sidebar-articles">
+            <div class="sidebar-item">
+              <div class="category-tag">DT5 — Asilo</div>
+              <h3>¿Tienes solicitud de asilo anterior a 2026? Así funciona la vía DT5</h3>
+              <p>Las personas con protección internacional pendiente o denegada antes del 1 de enero de 2026 pueden acceder directamente a la regularización.</p>
+              <a href="/noticias/dt5-asilo" class="read-more">Leer más →</a>
+            </div>
+            <div class="sidebar-item">
+              <div class="category-tag">DT6 — Arraigo</div>
+              <h3>Vía DT6: Arraigo laboral, familiar y vulnerabilidad social explicados</h3>
+              <p>Requisitos, documentos necesarios y cómo demostrar tu arraigo para obtener el permiso de residencia y trabajo.</p>
+              <a href="/noticias/dt6-arraigo" class="read-more">Leer más →</a>
+            </div>
+            <div class="sidebar-item">
+              <div class="category-tag">Guía</div>
+              <h3>Formularios EX-31 y EX-32: dónde descargarlos y cómo rellenarlos</h3>
+              <p>Guía paso a paso para completar los formularios oficiales de solicitud de regularización extraordinaria.</p>
+              <a href="/formularios" class="read-more">Leer más →</a>
+            </div>
+            <div class="sidebar-item">
+              <div class="category-tag">Urgente</div>
+              <h3>Sin cita previa: presenta tu solicitud directamente en la Oficina de Extranjería</h3>
+              <p>El nuevo proceso no requiere cita previa online. Aprende cómo presentarte y qué llevar el día de la solicitud.</p>
+              <a href="/guia#cita" class="read-more">Leer más →</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- AR Lead -->
+      <div data-lang="ar" style="display:none" dir="rtl">
+        <div class="lead-grid" style="direction:rtl">
+          <article class="lead-article ar">
+            <div class="category-tag" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">رسمي</div>
+            <h1 style="font-family:'Noto Naskh Arabic','Scheherazade New',serif; text-align:right">التسوية الاستثنائية 2026: كل ما تحتاج معرفته للحصول على الإقامة في إسبانيا</h1>
+            <p class="summary ar" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif; text-align:right">
+              المرسوم الملكي 316/2026 المنشور في 5 مارس في الجريدة الرسمية (BOE) يفتح الباب أمام أكثر من 500,000 شخص في وضع غير نظامي لتسوية أوضاعهم. الطلبات مفتوحة حتى 30 يونيو 2026.
+            </p>
+            <div class="info-box ar" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif; text-align:right">
+              <h4>أبرز نقاط العملية</h4>
+              <ul style="padding-right: 1rem; padding-left:0">
+                <li>إقامة لا تقل عن 5 أشهر قبل 31 ديسمبر 2025 (الطريق DT6)</li>
+                <li>عدم وجود سوابق جنائية في إسبانيا أو بلد المنشأ</li>
+                <li>الطريق DT5: طالبو اللجوء قبل 1 يناير 2026</li>
+                <li>الطريق DT6: الاندماج المهني أو العائلي أو الهشاشة الاجتماعية</li>
+                <li>تصريح أولي لمدة سنة + تصريح عمل فوري</li>
+                <li>القاصرون يُسوَّون في نفس الوقت لمدة 5 سنوات</li>
+              </ul>
+            </div>
+            <div class="meta ar" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif; text-align:right">
+              <strong>المصدر:</strong> BOE رقم 57 — 5 مارس 2026 · <strong>الموعد النهائي:</strong> 30 يونيو 2026
+            </div>
+          </article>
+          <aside class="sidebar-articles" style="border-left:none; padding-left:0; border-right:1px solid var(--border); padding-right:2.5rem">
+            <div class="sidebar-item ar" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif; text-align:right">
+              <div class="category-tag" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">DT5 — اللجوء</div>
+              <h3 style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">هل لديك طلب لجوء قبل 2026؟ هكذا يعمل الطريق DT5</h3>
+              <p>الأشخاص الذين لديهم طلب حماية دولية معلق أو مرفوض قبل 1 يناير 2026 يمكنهم الوصول مباشرة إلى التسوية.</p>
+            </div>
+            <div class="sidebar-item ar" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif; text-align:right">
+              <div class="category-tag" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">DT6 — الاندماج</div>
+              <h3 style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">الطريق DT6: الاندماج المهني والعائلي والهشاشة الاجتماعية</h3>
+              <p>المتطلبات والوثائق اللازمة وكيفية إثبات اندماجك للحصول على تصريح الإقامة والعمل.</p>
+            </div>
+            <div class="sidebar-item ar" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif; text-align:right">
+              <div class="category-tag" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">دليل</div>
+              <h3 style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">استمارات EX-31 و EX-32: أين تجدها وكيف تملأها</h3>
+              <p>دليل خطوة بخطوة لإتمام استمارات طلب التسوية الاستثنائية الرسمية.</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- LATEST NEWS -->
+  <section style="padding: 2rem 0 3rem">
+    <div class="container">
+
+      <!-- ES -->
+      <div data-lang="es">
+        <div class="section-header">
+          <h2>Últimas <span>Noticias</span></h2>
+          <div class="line"></div>
+          <a href="/noticias" style="font-family:var(--font-ui);font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);white-space:nowrap">Ver todo →</a>
+        </div>
+        <div class="grid-3" id="news-grid-es">
+          <div class="card">
+            <div class="card-image" style="background:linear-gradient(135deg,#c0392b22,#c9a84c22);display:flex;align-items:center;justify-content:center">
+              <svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="none" stroke="#c0392b" stroke-width="1.5"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="22" fill="#c0392b">🏛</text></svg>
+            </div>
+            <div class="card-body">
+              <div class="category-tag">Oficial</div>
+              <h3>Ministerio publica preguntas frecuentes sobre la regularización 2026</h3>
+              <p>El Ministerio de Inclusión actualizó su portal con un documento de 40 preguntas y respuestas sobre la tramitación del permiso extraordinario.</p>
+              <div class="meta">inclusion.gob.es · Mayo 2026</div>
+              <a href="/noticias/ministerio-faq" class="read-more" style="margin-top:0.5rem">Leer más →</a>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-image" style="background:linear-gradient(135deg,#1a3a5c22,#c9a84c22);display:flex;align-items:center;justify-content:center">
+              <svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="none" stroke="#1a3a5c" stroke-width="1.5"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="22" fill="#1a3a5c">📋</text></svg>
+            </div>
+            <div class="card-body">
+              <div class="category-tag">Guía</div>
+              <h3>Qué documentos necesitas según tu vía: DT5 o DT6 — lista completa</h3>
+              <p>Desglose exacto de la documentación requerida para cada tipo de solicitud, incluyendo alternativas cuando no tienes el documento original.</p>
+              <div class="meta">Análisis editorial · Abril 2026</div>
+              <a href="/guia" class="read-more" style="margin-top:0.5rem">Leer más →</a>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-image" style="background:linear-gradient(135deg,#92277a22,#c0392b22);display:flex;align-items:center;justify-content:center">
+              <svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="none" stroke="#92277a" stroke-width="1.5"/><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="22" fill="#92277a">⚖️</text></svg>
+            </div>
+            <div class="card-body">
+              <div class="category-tag">Derechos</div>
+              <h3>Tus derechos durante la tramitación: no pueden expulsarte mientras esperas respuesta</h3>
+              <p>El Real Decreto suspende los procedimientos de expulsión en curso mientras se tramita la solicitud de regularización.</p>
+              <div class="meta">Análisis jurídico · Abril 2026</div>
+              <a href="/noticias/derechos-tramitacion" class="read-more" style="margin-top:0.5rem">Leer más →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AR -->
+      <div data-lang="ar" style="display:none" dir="rtl">
+        <div class="section-header" style="flex-direction:row-reverse">
+          <h2 style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">آخر <span>الأخبار</span></h2>
+          <div class="line"></div>
+          <a href="/noticias" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif;font-size:0.82rem;font-weight:700;color:var(--red);white-space:nowrap">← عرض الكل</a>
+        </div>
+        <div class="grid-3">
+          <div class="card ar">
+            <div class="card-image" style="background:linear-gradient(135deg,#c0392b22,#c9a84c22);display:flex;align-items:center;justify-content:center">
+              <span style="font-size:3rem">🏛</span>
+            </div>
+            <div class="card-body">
+              <div class="category-tag" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">رسمي</div>
+              <h3 style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">وزارة الشمول تنشر أسئلة وأجوبة حول التسوية 2026</h3>
+              <p style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">حدّثت الوزارة بوابتها بوثيقة تضم 40 سؤالاً وجواباً حول معالجة التصريح الاستثنائي.</p>
+              <div class="meta ar" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">inclusion.gob.es · مايو 2026</div>
+            </div>
+          </div>
+          <div class="card ar">
+            <div class="card-image" style="background:linear-gradient(135deg,#1a3a5c22,#c9a84c22);display:flex;align-items:center;justify-content:center">
+              <span style="font-size:3rem">📋</span>
+            </div>
+            <div class="card-body">
+              <div class="category-tag" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">دليل</div>
+              <h3 style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">ما الوثائق التي تحتاجها حسب مسارك: DT5 أو DT6</h3>
+              <p style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">تفصيل دقيق للوثائق المطلوبة لكل نوع من الطلبات، مع البدائل عند عدم توفر الوثيقة الأصلية.</p>
+              <div class="meta ar" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">أبريل 2026</div>
+            </div>
+          </div>
+          <div class="card ar">
+            <div class="card-image" style="background:linear-gradient(135deg,#92277a22,#c0392b22);display:flex;align-items:center;justify-content:center">
+              <span style="font-size:3rem">⚖️</span>
+            </div>
+            <div class="card-body">
+              <div class="category-tag" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">حقوق</div>
+              <h3 style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">حقوقك أثناء المعالجة: لا يمكنهم ترحيلك ريثما تتلقى ردًا</h3>
+              <p style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">يوقف المرسوم الملكي إجراءات الترحيل الجارية طوال فترة معالجة طلب التسوية.</p>
+              <div class="meta ar" style="font-family:'Noto Naskh Arabic','Scheherazade New',serif">أبريل 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AGENT GENERATED ARTICLES PLACEHOLDER -->
+      <div id="ai-articles-container" style="margin-top:2.5rem"></div>
+
+    </div>
+  </section>
+
+  <!-- QUICK INFO BAND -->
+  <div style="background:var(--ink); padding:2.5rem 0; margin: 0">
+    <div class="container">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:2rem; text-align:center">
+        <div>
+          <div style="font-family:var(--font-display);font-size:3rem;font-weight:900;color:var(--gold)">500K+</div>
+          <div style="font-family:var(--font-ui);font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:#aaa;margin-top:0.25rem" data-lang="es">Personas pueden beneficiarse</div>
+          <div style="font-family:'Noto Naskh Arabic','Scheherazade New',serif;font-size:0.85rem;color:#aaa;margin-top:0.25rem;display:none" data-lang="ar">شخص يمكن أن يستفيد</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-display);font-size:3rem;font-weight:900;color:var(--gold)">30 Jun</div>
+          <div style="font-family:var(--font-ui);font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:#aaa;margin-top:0.25rem" data-lang="es">Fecha límite de solicitud</div>
+          <div style="font-family:'Noto Naskh Arabic','Scheherazade New',serif;font-size:0.85rem;color:#aaa;margin-top:0.25rem;display:none" data-lang="ar">الموعد النهائي للطلب</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-display);font-size:3rem;font-weight:900;color:var(--gold)">DT5 / DT6</div>
+          <div style="font-family:var(--font-ui);font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:#aaa;margin-top:0.25rem" data-lang="es">Vías disponibles</div>
+          <div style="font-family:'Noto Naskh Arabic','Scheherazade New',serif;font-size:0.85rem;color:#aaa;margin-top:0.25rem;display:none" data-lang="ar">المسارات المتاحة</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-display);font-size:3rem;font-weight:900;color:var(--gold)">1 año</div>
+          <div style="font-family:var(--font-ui);font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;color:#aaa;margin-top:0.25rem" data-lang="es">Permiso inicial</div>
+          <div style="font-family:'Noto Naskh Arabic','Scheherazade New',serif;font-size:0.85rem;color:#aaa;margin-top:0.25rem;display:none" data-lang="ar">التصريح الأولي</div>
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- NEWS GRID -->
-  <section class="bg-slate-50 border-b border-slate-100 py-14">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <NewsGrid tr={tr} limit={6} />
-    </div>
-  </section>
-
-  <!-- ADSENSE -->
-  <div class="max-w-6xl mx-auto px-4 py-6">
-    <div class="text-center text-xs text-slate-400 mb-2">Publicidad</div>
-    <ins class="adsbygoogle"
-         style="display:block"
-         data-ad-client="ca-pub-2691466441263858"
-         data-ad-slot="1234567890"
-         data-ad-format="auto"
-         data-full-width-responsive="true"></ins>
-    <script>
-         (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
   </div>
 
-  <Footer tr={tr} />
 </Base>
+
+<script is:inline>
+// COUNTDOWN TIMER
+function updateCountdown() {
+  const deadline = new Date('2026-06-30T23:59:59');
+  const now = new Date();
+  const diff = deadline - now;
+
+  if (diff <= 0) {
+    document.getElementById('cd-days').textContent = '0';
+    document.getElementById('cd-hours').textContent = '0';
+    document.getElementById('cd-mins').textContent = '0';
+    document.getElementById('cd-secs').textContent = '0';
+    return;
+  }
+
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000)  / 60000);
+  const secs  = Math.floor((diff % 60000)    / 1000);
+
+  document.getElementById('cd-days').textContent  = String(days).padStart(2,'0');
+  document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+  document.getElementById('cd-mins').textContent  = String(mins).padStart(2,'0');
+  document.getElementById('cd-secs').textContent  = String(secs).padStart(2,'0');
+
+  const lang = document.documentElement.lang;
+  document.getElementById('cd-days-label').textContent  = lang === 'ar' ? 'أيام'   : 'Días';
+  document.getElementById('cd-hours-label').textContent = lang === 'ar' ? 'ساعات'  : 'Horas';
+  document.getElementById('cd-mins-label').textContent  = lang === 'ar' ? 'دقائق'  : 'Minutos';
+  document.getElementById('cd-secs-label').textContent  = lang === 'ar' ? 'ثوانٍ'  : 'Segundos';
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+</script>
